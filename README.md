@@ -7,7 +7,7 @@ Benchmark ECMAScript parsers implemented in native languages.
 | Property | Value |
 |----------|-------|
 | OS | Linux 6.11.0-1018-azure (x64) |
-| CPU | Intel(R) Xeon(R) Platinum 8370C CPU @ 2.80GHz |
+| CPU | AMD EPYC 7763 64-Core Processor |
 | Cores | 4 |
 | Memory | 16 GB |
 
@@ -49,10 +49,10 @@ The TypeScript compiler source code bundled into a single file.
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Yuku | 63.53 ms | 62.98 ms | 64.48 ms | 39.8 MB |
-| Oxc | 64.16 ms | 63.61 ms | 64.92 ms | 53.0 MB |
-| SWC | 136.39 ms | 134.98 ms | 138.65 ms | 89.8 MB |
-| Jam | 155.24 ms | 154.35 ms | 156.16 ms | 186.1 MB |
+| Oxc | 74.42 ms | 73.43 ms | 76.23 ms | 52.8 MB |
+| Yuku | 76.80 ms | 75.68 ms | 88.00 ms | 39.7 MB |
+| SWC | 162.27 ms | 156.52 ms | 167.46 ms | 89.7 MB |
+| Jam | 186.40 ms | 184.72 ms | 190.00 ms | 186.1 MB |
 
 ### [Three.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/three.js)
 
@@ -64,10 +64,10 @@ A popular 3D graphics library for the web.
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Oxc | 13.44 ms | 13.08 ms | 14.67 ms | 13.5 MB |
-| Yuku | 14.54 ms | 13.92 ms | 16.53 ms | 10.1 MB |
-| SWC | 27.59 ms | 26.06 ms | 29.28 ms | 22.6 MB |
-| Jam | 33.79 ms | 32.80 ms | 34.79 ms | 39.5 MB |
+| Oxc | 16.38 ms | 15.77 ms | 18.84 ms | 13.4 MB |
+| Yuku | 18.23 ms | 17.86 ms | 21.20 ms | 10.3 MB |
+| SWC | 33.21 ms | 31.95 ms | 35.01 ms | 22.4 MB |
+| Jam | 41.70 ms | 41.16 ms | 42.48 ms | 39.5 MB |
 
 ### [Ant Design](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/antd.js)
 
@@ -79,9 +79,9 @@ A popular React UI component library with enterprise-class design.
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Yuku | 48.89 ms | 48.22 ms | 49.52 ms | 30.4 MB |
-| Oxc | 51.67 ms | 51.06 ms | 52.30 ms | 41.1 MB |
-| SWC | 104.69 ms | 104.01 ms | 105.77 ms | 67.5 MB |
+| Yuku | 58.67 ms | 57.97 ms | 60.08 ms | 30.5 MB |
+| Oxc | 59.15 ms | 57.98 ms | 66.90 ms | 41.0 MB |
+| SWC | 122.19 ms | 120.51 ms | 125.06 ms | 67.3 MB |
 | Jam | Failed to parse | - | - | - |
 
 ## Run Benchmarks
