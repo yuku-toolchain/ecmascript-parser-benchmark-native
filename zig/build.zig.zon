@@ -5,8 +5,8 @@
     .fingerprint = 0xa1bd1b16d2a0c0b3,
     .dependencies = .{
         .yuku = .{
-            .url = "git+https://github.com/arshad-yaseen/yuku/?ref=HEAD#aed7d8887d9feec2339d4dd1127532c062eb9631",
-            .hash = "yuku-0.0.0-m6ranhspCADFqCvqGc2rqyIp5vVWna1OsY6EvtgYJndL",
+            .url = "git+https://github.com/arshad-yaseen/yuku/?ref=HEAD#e7e053e3d43d817a0ae7495889226524c808df49",
+            .hash = "yuku-0.0.0-m6ranszzBwD3EkM1ICM58zcswjhVQpTvyCsxlqzMcKz4",
         },
         .jam = .{
             .url = "git+https://github.com/srijan-paul/jam/?ref=HEAD#ac5d600eaae30a883f0e87d46493d48db9e501a8",
