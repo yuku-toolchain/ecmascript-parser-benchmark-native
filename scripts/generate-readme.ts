@@ -108,8 +108,6 @@ const CHART_COLORS = {
 
 async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
 	const data = await readBenchmarkResults(fileKey);
-	const chartWidth = 800;
-	const chartHeight = 400;
 
 	const resultsByParser = new Map<ParserKey, BenchmarkResult>();
 	for (const result of data.results) {
@@ -139,17 +137,25 @@ async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
 
 	parserData.sort((a, b) => a.mean - b.mean);
 
+	const barCount = parserData.length;
+	const chartWidth = 600;
+	const chartHeight = barCount * 28 + 36;
+
 	const labels = parserData.map((p) => p.name);
 	const meanData = parserData.map((p) => p.mean);
 	const colors = parserData.map((p) => p.color);
 
 	const maxTime = Math.max(...meanData);
-	const chartMax = maxTime < 200 ? 200 : maxTime < 500 ? 500 : 1000;
+	const niceSteps = [10, 20, 25, 50, 100, 200, 250, 500];
+	const rawStep = maxTime / 4;
+	const step =
+		niceSteps.find((s) => s >= rawStep) || Math.ceil(rawStep / 100) * 100;
+	const chartMax = Math.ceil(maxTime / step) * step;
 
+	const dpr = 3;
 	const chartJSNodeCanvas = new ChartJSNodeCanvas({
-		width: chartWidth,
-		height: chartHeight,
-		backgroundColour: "#0d1117",
+		width: chartWidth * dpr,
+		height: chartHeight * dpr,
 	});
 
 	const configuration: ChartConfiguration = {
@@ -158,66 +164,87 @@ async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
 			labels,
 			datasets: [
 				{
-					label: "Time (ms)",
 					data: meanData,
 					backgroundColor: colors,
-					borderColor: colors,
 					borderWidth: 0,
-					borderRadius: 6,
-					barThickness: 40,
+					borderRadius: 3 * dpr,
+					barPercentage: 0.7,
+					categoryPercentage: 0.9,
 				},
 			],
 		},
 		options: {
 			indexAxis: "y",
 			responsive: false,
+			devicePixelRatio: 1,
+			layout: {
+				padding: {
+					right: 80 * dpr,
+					top: 2 * dpr,
+					bottom: 0,
+				},
+			},
 			plugins: {
-				title: {
-					display: false,
-				},
-				legend: {
-					display: false,
-				},
+				legend: { display: false },
+				title: { display: false },
 			},
 			scales: {
 				x: {
 					beginAtZero: true,
 					max: chartMax,
 					grid: {
-						color: "#21262d",
+						color: "#d0d0d0",
 						lineWidth: 1,
 					},
-					ticks: {
-						color: "#8b949e",
-						font: {
-							size: 12,
-						},
-						callback: (value) => value + " ms",
-					},
-					title: {
-						display: true,
-						text: "Parse Time",
-						font: {
-							size: 14,
-							weight: "bold",
-						},
-						color: "#8b949e",
-					},
-				},
-				y: {
-					grid: {
+					border: {
 						display: false,
 					},
 					ticks: {
-						color: "#e6edf3",
+						stepSize: step,
+						color: "#8b8b8b",
+						font: { size: 11 * dpr },
+						callback: (value) => value + "ms",
+					},
+				},
+				y: {
+					grid: { display: false },
+					border: { display: false },
+					ticks: {
+						color: "#555",
 						font: {
-							size: 14,
-							weight: 500,
+							size: 12 * dpr,
+							weight: "bold",
 						},
+						padding: 4 * dpr,
 					},
 				},
 			},
 		},
+		plugins: [
+			{
+				id: "value-labels",
+				afterDatasetsDraw(chart) {
+					const ctx = chart.ctx;
+					const meta = chart.getDatasetMeta(0);
+					const dataset = chart.data.datasets[0];
+					for (let i = 0; i < meta.data.length; i++) {
+						const bar = meta.data[i];
+						const value = dataset.data[i] as number;
+						ctx.save();
+						ctx.fillStyle = "#888";
+						ctx.font = `${11 * dpr}px sans-serif`;
+						ctx.textAlign = "left";
+						ctx.textBaseline = "middle";
+						ctx.fillText(
+							`${value.toFixed(2)}ms`,
+							bar.x + 8 * dpr,
+							bar.y,
+						);
+						ctx.restore();
+					}
+				},
+			},
+		],
 	};
 
 	const imageBuffer = await chartJSNodeCanvas.renderToBuffer(configuration);
