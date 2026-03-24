@@ -9,8 +9,8 @@
             .hash = "jam-0.0.0-1QhPrgOUCQAHsL-kEUc6-LbRRWBfkyrxriEEp8viHV3W",
         },
         .yuku = .{
-            .url = "git+https://github.com/yuku-toolchain/yuku/?ref=HEAD#a6421a60d56ce648b617831c92fce6f17afb87a6",
-            .hash = "yuku-0.0.0-m6ranl-sCACTLdKwr02Dj42dIKAkbMXiUYjMBllcsZuT",
+            .url = "git+https://github.com/yuku-toolchain/yuku/?ref=HEAD#c9882f5a62735d2b315dfe8c5511711044ed2fd5",
+            .hash = "yuku-0.0.0-m6ranvbmCABvD9yZy2oyaWnPNl2oR81NBqpwqgMCqven",
         },
     },
     .paths = .{
