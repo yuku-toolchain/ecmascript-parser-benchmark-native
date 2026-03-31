@@ -39,15 +39,11 @@ A JavaScript toolchain written in Zig featuring a parser, linter, formatter, pri
 
 ## Benchmarks
 
-Each benchmark measures the total time to parse the source file into an AST. Source files are embedded at compile time to eliminate file I/O from measurements.
-
-### [TypeScript](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/typescript.js)
-
-The TypeScript compiler source code bundled into a single file.
+### [typescript.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/typescript.js)
 
 **File size:** 7.83 MB
 
-![TypeScript Performance](charts/typescript.png)
+![typescript.js Performance](charts/typescript.png)
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
@@ -56,13 +52,11 @@ The TypeScript compiler source code bundled into a single file.
 | Jam | 51.92 ms | 47.50 ms | 72.59 ms | 186.8 MB |
 | SWC | 55.86 ms | 52.06 ms | 65.90 ms | 88.9 MB |
 
-### [Three.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/three.js)
-
-A popular 3D graphics library for the web.
+### [three.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/three.js)
 
 **File size:** 1.96 MB
 
-![Three.js Performance](charts/three.png)
+![three.js Performance](charts/three.png)
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
@@ -71,13 +65,11 @@ A popular 3D graphics library for the web.
 | SWC | 12.61 ms | 10.88 ms | 24.15 ms | 21.3 MB |
 | Jam | 12.83 ms | 11.09 ms | 28.64 ms | 40.2 MB |
 
-### [Ant Design](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/antd.js)
-
-A popular React UI component library with enterprise-class design.
+### [antd.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/antd.js)
 
 **File size:** 5.43 MB
 
-![Ant Design Performance](charts/antd.png)
+![antd.js Performance](charts/antd.png)
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
@@ -94,27 +86,27 @@ Parsers handle this differently: SWC checks some scope-dependent errors during p
 
 The benchmarks below measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.
 
-### TypeScript
+### [typescript.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/typescript.js)
 
-![TypeScript Semantic Performance](charts/typescript_semantic.png)
+![typescript.js Semantic Performance](charts/typescript_semantic.png)
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
 | Yuku + Semantic | 45.94 ms | 42.62 ms | 53.29 ms | 186.8 MB |
 | Oxc + Semantic | 61.52 ms | 58.64 ms | 71.71 ms | 186.8 MB |
 
-### Three.js
+### [three.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/three.js)
 
-![Three.js Semantic Performance](charts/three_semantic.png)
+![three.js Semantic Performance](charts/three_semantic.png)
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
 | Yuku + Semantic | 11.41 ms | 9.80 ms | 26.52 ms | 40.2 MB |
 | Oxc + Semantic | 14.15 ms | 11.87 ms | 27.01 ms | 40.2 MB |
 
-### Ant Design
+### [antd.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/antd.js)
 
-![Ant Design Semantic Performance](charts/antd_semantic.png)
+![antd.js Semantic Performance](charts/antd_semantic.png)
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
@@ -155,21 +147,6 @@ This will build all parsers and run benchmarks on all test files. Results are sa
 
 ## Methodology
 
-### How Benchmarks Are Conducted
+All parsers are compiled with release optimizations. Source files are embedded at compile time (Zig `@embedFile`, Rust `include_str!`) to eliminate file I/O from measurements. Rust parsers are built with `cargo build --release` using LTO, a single codegen unit, and symbol stripping. Zig parsers are built with `zig build --release=fast`.
 
-1. **Build Phase**: All parsers are compiled with release optimizations. Source files are embedded at compile time (Zig `@embedFile`, Rust `include_str!`) to eliminate file I/O from measurements:
-   - Rust parsers: `cargo build --release` with LTO, single codegen unit, and symbol stripping
-   - Zig parsers: `zig build --release=fast`
-
-2. **Benchmark Phase**: Each parser is benchmarked using [Hyperfine](https://github.com/sharkdp/hyperfine):
-   - 100 warmup runs to ensure stable measurements
-   - Multiple timed runs for statistical accuracy
-   - Results exported to JSON for analysis
-
-3. **Measurement**: Each benchmark measures the total time to:
-   - Parse the entire file into an AST (source is embedded at compile time, no file I/O)
-   - Clean up allocated memory
-
-### Test Files
-
-The benchmark uses real-world JavaScript files from popular open-source projects to ensure results reflect practical performance characteristics.
+Each parser is benchmarked using [Hyperfine](https://github.com/sharkdp/hyperfine) with warmup runs followed by multiple timed runs. Each run measures the time to parse the entire file into an AST and free the allocated memory.

@@ -67,22 +67,14 @@ const CHART_COLORS: Record<string, string> = {
 
 const FILES = {
 	typescript: {
-		name: "TypeScript",
-		description:
-			"The TypeScript compiler source code bundled into a single file.",
 		path: "files/typescript.js",
 		source_url: `${FILES_SOURCE_URL_PREFIX}/typescript.js`,
 	},
 	three: {
-		name: "Three.js",
-		description: "A popular 3D graphics library for the web.",
 		path: "files/three.js",
 		source_url: `${FILES_SOURCE_URL_PREFIX}/three.js`,
 	},
 	antd: {
-		name: "Ant Design",
-		description:
-			"A popular React UI component library with enterprise-class design.",
 		path: "files/antd.js",
 		source_url: `${FILES_SOURCE_URL_PREFIX}/antd.js`,
 	},
@@ -222,7 +214,7 @@ async function generateChart(entries: ParserEntry[], chartName: string): Promise
 					border: { display: false },
 					ticks: {
 						color: "#CAC1B0",
-						font: { size: 9 * dpr, weight: "500" },
+						font: { size: 9 * dpr },
 						padding: 3 * dpr,
 					},
 				},
@@ -264,7 +256,6 @@ function generateTable(entries: ParserEntry[]): string {
 		({ result }) => result && getPeakMemory(result) !== null,
 	);
 
-	const cols = hasMemoryData ? 5 : 4;
 	const lines: string[] = [];
 
 	if (hasMemoryData) {
@@ -298,20 +289,19 @@ async function generateBenchmarksSection(): Promise<string> {
 
 	for (const [key, file] of Object.entries(FILES)) {
 		const fileKey = key as FileKey;
+		const fileName = file.path.split("/").pop()!;
 		const fileSize = (await stat(join(process.cwd(), file.path))).size;
 		const data = await readBenchmarkResults(fileKey);
 		const entries = getParserEntries(data, false);
 
-		lines.push(`### [${file.name}](${file.source_url})`);
-		lines.push("");
-		lines.push(file.description);
+		lines.push(`### [${fileName}](${file.source_url})`);
 		lines.push("");
 		lines.push(`**File size:** ${formatBytes(fileSize)}`);
 		lines.push("");
 
 		const chartPath = await generateChart(entries, fileKey);
 		if (chartPath) {
-			lines.push(`![${file.name} Performance](${chartPath})`);
+			lines.push(`![${fileName} Performance](${chartPath})`);
 			lines.push("");
 		}
 
@@ -336,16 +326,17 @@ async function generateSemanticSection(): Promise<string> {
 
 	for (const [key, file] of Object.entries(FILES)) {
 		const fileKey = key as FileKey;
+		const fileName = file.path.split("/").pop()!;
 		const data = await readBenchmarkResults(fileKey);
 		const entries = getParserEntries(data, true);
 		if (entries.every((e) => e.result == null)) continue;
 
-		lines.push(`### ${file.name}`);
+		lines.push(`### [${fileName}](${file.source_url})`);
 		lines.push("");
 
 		const chartPath = await generateChart(entries, `${fileKey}_semantic`);
 		if (chartPath) {
-			lines.push(`![${file.name} Semantic Performance](${chartPath})`);
+			lines.push(`![${fileName} Semantic Performance](${chartPath})`);
 			lines.push("");
 		}
 
@@ -429,24 +420,9 @@ This will build all parsers and run benchmarks on all test files. Results are sa
 function generateMethodologySection(): string {
 	return `## Methodology
 
-### How Benchmarks Are Conducted
+All parsers are compiled with release optimizations. Source files are embedded at compile time (Zig \`@embedFile\`, Rust \`include_str!\`) to eliminate file I/O from measurements. Rust parsers are built with \`cargo build --release\` using LTO, a single codegen unit, and symbol stripping. Zig parsers are built with \`zig build --release=fast\`.
 
-1. **Build Phase**: All parsers are compiled with release optimizations. Source files are embedded at compile time (Zig \`@embedFile\`, Rust \`include_str!\`) to eliminate file I/O from measurements:
-   - Rust parsers: \`cargo build --release\` with LTO, single codegen unit, and symbol stripping
-   - Zig parsers: \`zig build --release=fast\`
-
-2. **Benchmark Phase**: Each parser is benchmarked using [Hyperfine](https://github.com/sharkdp/hyperfine):
-   - 100 warmup runs to ensure stable measurements
-   - Multiple timed runs for statistical accuracy
-   - Results exported to JSON for analysis
-
-3. **Measurement**: Each benchmark measures the total time to:
-   - Parse the entire file into an AST (source is embedded at compile time, no file I/O)
-   - Clean up allocated memory
-
-### Test Files
-
-The benchmark uses real-world JavaScript files from popular open-source projects to ensure results reflect practical performance characteristics.`;
+Each parser is benchmarked using [Hyperfine](https://github.com/sharkdp/hyperfine) with warmup runs followed by multiple timed runs. Each run measures the time to parse the entire file into an AST and free the allocated memory.`;
 }
 
 async function main() {
