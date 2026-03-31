@@ -49,10 +49,10 @@ The TypeScript compiler source code bundled into a single file.
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Oxc | 27.54 ms | 25.36 ms | 37.70 ms | 52.9 MB |
-| Yuku | 28.32 ms | 26.44 ms | 46.91 ms | 40.6 MB |
-| Jam | 49.34 ms | 47.32 ms | 63.34 ms | 186.8 MB |
-| SWC | 56.50 ms | 51.28 ms | 69.28 ms | 88.9 MB |
+| Oxc | 27.08 ms | 25.45 ms | 38.47 ms | 52.7 MB |
+| Yuku | 28.91 ms | 26.57 ms | 54.52 ms | 40.6 MB |
+| Jam | 50.24 ms | 47.35 ms | 63.73 ms | 186.9 MB |
+| SWC | 53.40 ms | 50.82 ms | 71.63 ms | 88.9 MB |
 
 ### [Three.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/three.js)
 
@@ -64,10 +64,10 @@ A popular 3D graphics library for the web.
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Oxc | 7.73 ms | 6.44 ms | 26.68 ms | 13.1 MB |
-| Yuku | 8.38 ms | 7.03 ms | 26.51 ms | 11.0 MB |
-| SWC | 13.14 ms | 11.33 ms | 32.33 ms | 21.4 MB |
-| Jam | 13.47 ms | 11.73 ms | 26.97 ms | 40.2 MB |
+| Oxc | 8.09 ms | 6.62 ms | 21.41 ms | 13.0 MB |
+| Yuku | 8.23 ms | 6.94 ms | 22.35 ms | 11.0 MB |
+| SWC | 13.40 ms | 11.26 ms | 31.71 ms | 21.4 MB |
+| Jam | 13.59 ms | 11.59 ms | 30.89 ms | 40.2 MB |
 
 ### [Ant Design](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/antd.js)
 
@@ -79,9 +79,9 @@ A popular React UI component library with enterprise-class design.
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Yuku | 22.11 ms | 20.41 ms | 42.22 ms | 31.2 MB |
-| Oxc | 23.69 ms | 20.61 ms | 38.28 ms | 40.8 MB |
-| SWC | 43.55 ms | 38.81 ms | 56.23 ms | 66.4 MB |
+| Yuku | 22.45 ms | 20.84 ms | 33.13 ms | 31.2 MB |
+| Oxc | 23.96 ms | 21.06 ms | 38.51 ms | 40.8 MB |
+| SWC | 42.03 ms | 39.37 ms | 55.61 ms | 66.4 MB |
 | Jam | Failed to parse | - | - | - |
 
 ## Run Benchmarks
