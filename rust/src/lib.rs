@@ -1,11 +1,19 @@
 use oxc_allocator::Allocator;
 use oxc_parser::Parser;
+use oxc_semantic::SemanticBuilder;
 use oxc_span::SourceType;
 
 pub fn parse_with_oxc(source: &str) {
     let source_type = SourceType::from_path("bench.js").unwrap();
     let allocator = Allocator::default();
     let _ = Parser::new(&allocator, source, source_type).parse();
+}
+
+pub fn parse_and_analyze_with_oxc(source: &str) {
+    let source_type = SourceType::from_path("bench.js").unwrap();
+    let allocator = Allocator::default();
+    let ret = Parser::new(&allocator, source, source_type).parse();
+    let _ = SemanticBuilder::new().with_check_syntax_error(true).build(&ret.program);
 }
 
 pub fn parse_with_swc(source: &str) {

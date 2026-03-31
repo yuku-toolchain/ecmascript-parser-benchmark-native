@@ -14,6 +14,7 @@ const PARSERS = {
 		description:
 			"A high-performance & spec-compliant JavaScript/TypeScript compiler written in Zig.",
 		url: "https://github.com/yuku-toolchain/yuku",
+		semantic: false,
 	},
 	oxc: {
 		name: "Oxc",
@@ -21,6 +22,7 @@ const PARSERS = {
 		description:
 			"A high-performance JavaScript and TypeScript parser written in Rust.",
 		url: "https://github.com/oxc-project/oxc",
+		semantic: false,
 	},
 	swc: {
 		name: "SWC",
@@ -28,6 +30,23 @@ const PARSERS = {
 		description:
 			"An extensible Rust-based platform for compiling and bundling JavaScript and TypeScript.",
 		url: "https://github.com/swc-project/swc",
+		semantic: false,
+	},
+	yuku_semantic: {
+		name: "Yuku + Semantic",
+		language: "Zig",
+		description:
+			"Yuku parser with semantic analysis.",
+		url: "https://github.com/yuku-toolchain/yuku",
+		semantic: true,
+	},
+	oxc_semantic: {
+		name: "Oxc + Semantic",
+		language: "Rust",
+		description:
+			"Oxc parser with semantic analysis.",
+		url: "https://github.com/oxc-project/oxc",
+		semantic: true,
 	},
 	jam: {
 		name: "Jam",
@@ -35,6 +54,7 @@ const PARSERS = {
 		description:
 			"A JavaScript toolchain written in Zig featuring a parser, linter, formatter, printer, and vulnerability scanner.",
 		url: "https://github.com/srijan-paul/jam",
+		semantic: false,
 	},
 } as const;
 
@@ -103,6 +123,8 @@ const CHART_COLORS = {
 	yuku: "#FF6B35",
 	oxc: "#F72585",
 	swc: "#4CC9F0",
+	yuku_semantic: "#E8890C",
+	oxc_semantic: "#B5179E",
 	jam: "#7209B7",
 };
 
@@ -118,9 +140,11 @@ async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
 	}
 
 	const parserData: Array<{
+		key: string;
 		name: string;
 		mean: number;
 		color: string;
+		semantic: boolean;
 	}> = [];
 
 	for (const [key, parser] of Object.entries(PARSERS)) {
@@ -128,14 +152,26 @@ async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
 		const result = resultsByParser.get(parserKey);
 		if (result) {
 			parserData.push({
+				key,
 				name: parser.name,
 				mean: result.mean * 1000,
 				color: CHART_COLORS[parserKey],
+				semantic: parser.semantic,
 			});
 		}
 	}
 
-	parserData.sort((a, b) => a.mean - b.mean);
+	const nonSemantic = parserData.filter((p) => !p.semantic);
+	const semantic = parserData.filter((p) => p.semantic);
+	nonSemantic.sort((a, b) => a.mean - b.mean);
+	const sortedData: typeof parserData = [];
+	for (const entry of nonSemantic) {
+		sortedData.push(entry);
+		const semanticEntry = semantic.find((s) => s.key === `${entry.key}_semantic`);
+		if (semanticEntry) sortedData.push(semanticEntry);
+	}
+	parserData.length = 0;
+	parserData.push(...sortedData);
 
 	const barCount = parserData.length;
 	const chartWidth = 500;
@@ -247,8 +283,13 @@ function extractParserName(command: string): string {
 	const match = command.match(/\.\/bin\/(\w+)/);
 	if (!match) return "unknown";
 	const name = match[1];
-	const underscoreIndex = name.indexOf("_");
-	return underscoreIndex !== -1 ? name.substring(0, underscoreIndex) : name;
+	const keys = Object.keys(PARSERS).sort((a, b) => b.length - a.length);
+	for (const key of keys) {
+		if (name.startsWith(key + "_") || name === key) {
+			return key;
+		}
+	}
+	return "unknown";
 }
 
 async function getFileSize(filePath: string): Promise<number> {
@@ -266,6 +307,7 @@ function generateParsersSection(): string {
 	const lines = ["## Parsers", ""];
 
 	for (const [, parser] of Object.entries(PARSERS)) {
+		if (parser.semantic) continue;
 		lines.push(`### [${parser.name}](${parser.url})`);
 		lines.push("");
 		lines.push(`**Language:** ${parser.language}`);
@@ -275,6 +317,16 @@ function generateParsersSection(): string {
 	}
 
 	return lines.join("\n");
+}
+
+function generateSemanticSection(): string {
+	return `## What is Semantic?
+
+The ECMAScript specification defines a set of early errors that conformant implementations must report before execution. Some of these are detectable during parsing from local context alone, like \`return\` outside a function, \`yield\` outside a generator, invalid destructuring, etc. Others require knowledge of the program's scope structure and bindings, such as redeclarations, unresolved exports, private fields used outside their class, etc.
+
+Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku and Oxc defer them entirely to a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.
+
+The **"+ Semantic"** rows measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.`;
 }
 
 async function generateBenchmarkTable(fileKey: FileKey): Promise<string> {
@@ -290,6 +342,7 @@ async function generateBenchmarkTable(fileKey: FileKey): Promise<string> {
 	}
 
 	const parserEntries: Array<{
+		key: string;
 		parser: (typeof PARSERS)[ParserKey];
 		result: BenchmarkResult | null;
 	}> = [];
@@ -297,19 +350,27 @@ async function generateBenchmarkTable(fileKey: FileKey): Promise<string> {
 	for (const [key, parser] of Object.entries(PARSERS)) {
 		const parserKey = key as ParserKey;
 		const result = resultsByParser.get(parserKey) || null;
-		parserEntries.push({ parser, result });
+		parserEntries.push({ key, parser, result });
 	}
 
-	parserEntries.sort((a, b) => {
-		if (a.result && b.result) {
-			return a.result.mean - b.result.mean;
-		}
+	const nonSemantic = parserEntries.filter((e) => !e.parser.semantic);
+	const semantic = parserEntries.filter((e) => e.parser.semantic);
+
+	nonSemantic.sort((a, b) => {
+		if (a.result && b.result) return a.result.mean - b.result.mean;
 		if (a.result && !b.result) return -1;
 		if (!a.result && b.result) return 1;
 		return 0;
 	});
 
-	const hasMemoryData = parserEntries.some(
+	const sorted: typeof parserEntries = [];
+	for (const entry of nonSemantic) {
+		sorted.push(entry);
+		const semanticEntry = semantic.find((s) => s.key === `${entry.key}_semantic`);
+		if (semanticEntry) sorted.push(semanticEntry);
+	}
+
+	const hasMemoryData = sorted.some(
 		({ result }) => result && getPeakMemory(result) !== null,
 	);
 
@@ -321,7 +382,7 @@ async function generateBenchmarkTable(fileKey: FileKey): Promise<string> {
 		lines.push("|--------|------|-----|-----|");
 	}
 
-	for (const { parser, result } of parserEntries) {
+	for (const { parser, result } of sorted) {
 		if (result) {
 			if (hasMemoryData) {
 				const memory = getPeakMemory(result);
@@ -468,6 +529,8 @@ async function generateReadme(): Promise<string> {
 		"",
 		generateParsersSection(),
 		await generateBenchmarksSection(),
+		generateSemanticSection(),
+		"",
 		generateRunSection(),
 		"",
 		generateMethodologySection(),

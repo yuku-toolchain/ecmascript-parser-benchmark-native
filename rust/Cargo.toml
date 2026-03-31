@@ -26,6 +26,24 @@ test    = false
 doctest = false
 
 [[bin]]
+name = "oxc_semantic_typescript"
+path = "src/oxc_semantic_typescript.rs"
+test    = false
+doctest = false
+
+[[bin]]
+name = "oxc_semantic_three"
+path = "src/oxc_semantic_three.rs"
+test    = false
+doctest = false
+
+[[bin]]
+name = "oxc_semantic_antd"
+path = "src/oxc_semantic_antd.rs"
+test    = false
+doctest = false
+
+[[bin]]
 name = "swc_typescript"
 path = "src/swc_typescript.rs"
 test    = false
@@ -46,6 +64,7 @@ doctest = false
 [dependencies]
 oxc_allocator = "0.102.0"
 oxc_parser = "0.102.0"
+oxc_semantic = "0.102.0"
 oxc_span = "0.102.0"
 
 swc_ecma_parser = { version = "33.0.0", features = ["typescript"] }

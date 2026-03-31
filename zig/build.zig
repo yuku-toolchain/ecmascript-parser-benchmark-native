@@ -38,6 +38,20 @@ pub fn build(b: *std.Build) void {
         });
         b.installArtifact(yuku_exe);
 
+        const yuku_semantic_exe = b.addExecutable(.{
+            .name = "yuku_semantic_" ++ file.name,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path("src/yuku_semantic.zig"),
+                .target = target,
+                .optimize = optimize,
+            }),
+        });
+        yuku_semantic_exe.root_module.addImport("yuku_parser", yuku_parser);
+        yuku_semantic_exe.root_module.addAnonymousImport("source", .{
+            .root_source_file = b.path(file.path),
+        });
+        b.installArtifact(yuku_semantic_exe);
+
         const jam_exe = b.addExecutable(.{
             .name = "jam_" ++ file.name,
             .root_module = b.createModule(.{
