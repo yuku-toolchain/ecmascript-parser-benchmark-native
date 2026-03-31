@@ -39,6 +39,8 @@ A JavaScript toolchain written in Zig featuring a parser, linter, formatter, pri
 
 ## Benchmarks
 
+Each benchmark measures the total time to parse the source file into an AST. Source files are embedded at compile time to eliminate file I/O from measurements.
+
 ### [TypeScript](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/typescript.js)
 
 The TypeScript compiler source code bundled into a single file.
@@ -53,9 +55,6 @@ The TypeScript compiler source code bundled into a single file.
 | Oxc | 28.62 ms | 25.60 ms | 38.22 ms | 53.2 MB |
 | Jam | 51.92 ms | 47.50 ms | 72.59 ms | 186.8 MB |
 | SWC | 55.86 ms | 52.06 ms | 65.90 ms | 88.9 MB |
-| | | | | |
-| Yuku + Semantic | 45.94 ms | 42.62 ms | 53.29 ms | 186.8 MB |
-| Oxc + Semantic | 61.52 ms | 58.64 ms | 71.71 ms | 186.8 MB |
 
 ### [Three.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/three.js)
 
@@ -71,9 +70,6 @@ A popular 3D graphics library for the web.
 | Yuku | 8.44 ms | 6.60 ms | 25.23 ms | 11.0 MB |
 | SWC | 12.61 ms | 10.88 ms | 24.15 ms | 21.3 MB |
 | Jam | 12.83 ms | 11.09 ms | 28.64 ms | 40.2 MB |
-| | | | | |
-| Yuku + Semantic | 11.41 ms | 9.80 ms | 26.52 ms | 40.2 MB |
-| Oxc + Semantic | 14.15 ms | 11.87 ms | 27.01 ms | 40.2 MB |
 
 ### [Ant Design](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/antd.js)
 
@@ -89,17 +85,41 @@ A popular React UI component library with enterprise-class design.
 | Yuku | 22.90 ms | 20.64 ms | 46.45 ms | 31.2 MB |
 | SWC | 41.50 ms | 39.16 ms | 53.83 ms | 66.3 MB |
 | Jam | Failed to parse | - | - | - |
-| | | | | |
-| Yuku + Semantic | 34.67 ms | 33.12 ms | 47.35 ms | 66.3 MB |
-| Oxc + Semantic | 44.71 ms | 43.24 ms | 48.06 ms | 70.4 MB |
 
-## What is Semantic?
+## Semantic
 
 The ECMAScript specification defines a set of early errors that conformant implementations must report before execution. Some of these are detectable during parsing from local context alone, like `return` outside a function, `yield` outside a generator, invalid destructuring, etc. Others require knowledge of the program's scope structure and bindings, such as redeclarations, unresolved exports, private fields used outside their class, etc.
 
 Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku and Oxc defer them entirely to a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.
 
-The **"+ Semantic"** rows measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.
+The benchmarks below measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.
+
+### TypeScript
+
+![TypeScript Semantic Performance](charts/typescript_semantic.png)
+
+| Parser | Mean | Min | Max | Peak Memory (RSS) |
+|--------|------|-----|-----|----|
+| Yuku + Semantic | 45.94 ms | 42.62 ms | 53.29 ms | 186.8 MB |
+| Oxc + Semantic | 61.52 ms | 58.64 ms | 71.71 ms | 186.8 MB |
+
+### Three.js
+
+![Three.js Semantic Performance](charts/three_semantic.png)
+
+| Parser | Mean | Min | Max | Peak Memory (RSS) |
+|--------|------|-----|-----|----|
+| Yuku + Semantic | 11.41 ms | 9.80 ms | 26.52 ms | 40.2 MB |
+| Oxc + Semantic | 14.15 ms | 11.87 ms | 27.01 ms | 40.2 MB |
+
+### Ant Design
+
+![Ant Design Semantic Performance](charts/antd_semantic.png)
+
+| Parser | Mean | Min | Max | Peak Memory (RSS) |
+|--------|------|-----|-----|----|
+| Yuku + Semantic | 34.67 ms | 33.12 ms | 47.35 ms | 66.3 MB |
+| Oxc + Semantic | 44.71 ms | 43.24 ms | 48.06 ms | 70.4 MB |
 
 ## Run Benchmarks
 

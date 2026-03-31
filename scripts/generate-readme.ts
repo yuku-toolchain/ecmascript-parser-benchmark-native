@@ -35,16 +35,14 @@ const PARSERS = {
 	yuku_semantic: {
 		name: "Yuku + Semantic",
 		language: "Zig",
-		description:
-			"Yuku parser with semantic analysis.",
+		description: "Yuku parser with semantic analysis.",
 		url: "https://github.com/yuku-toolchain/yuku",
 		semantic: true,
 	},
 	oxc_semantic: {
 		name: "Oxc + Semantic",
 		language: "Rust",
-		description:
-			"Oxc parser with semantic analysis.",
+		description: "Oxc parser with semantic analysis.",
 		url: "https://github.com/oxc-project/oxc",
 		semantic: true,
 	},
@@ -57,6 +55,15 @@ const PARSERS = {
 		semantic: false,
 	},
 } as const;
+
+const CHART_COLORS: Record<string, string> = {
+	yuku: "#FF6B35",
+	oxc: "#F72585",
+	swc: "#4CC9F0",
+	yuku_semantic: "#E8890C",
+	oxc_semantic: "#B5179E",
+	jam: "#7209B7",
+};
 
 const FILES = {
 	typescript: {
@@ -94,23 +101,22 @@ interface BenchmarkResult {
 	memory_usage_byte?: number[];
 }
 
-interface BenchmarkData {
-	results: BenchmarkResult[];
+interface ParserEntry {
+	key: string;
+	name: string;
+	result: BenchmarkResult | null;
 }
 
 function formatBytes(bytes: number): string {
-	const mb = bytes / (1024 * 1024);
-	return `${mb.toFixed(2)} MB`;
+	return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
 function formatTime(seconds: number): string {
-	const ms = seconds * 1000;
-	return `${ms.toFixed(2)} ms`;
+	return `${(seconds * 1000).toFixed(2)} ms`;
 }
 
 function formatMemory(bytes: number): string {
-	const mb = bytes / (1024 * 1024);
-	return `${mb.toFixed(1)} MB`;
+	return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 function getPeakMemory(result: BenchmarkResult): number | null {
@@ -119,71 +125,65 @@ function getPeakMemory(result: BenchmarkResult): number | null {
 	return Math.max(...result.memory_usage_byte);
 }
 
-const CHART_COLORS = {
-	yuku: "#FF6B35",
-	oxc: "#F72585",
-	swc: "#4CC9F0",
-	yuku_semantic: "#E8890C",
-	oxc_semantic: "#B5179E",
-	jam: "#7209B7",
-};
+function extractParserName(command: string): string {
+	const match = command.match(/\.\/bin\/(\w+)/);
+	if (!match) return "unknown";
+	const name = match[1];
+	const keys = Object.keys(PARSERS).sort((a, b) => b.length - a.length);
+	for (const key of keys) {
+		if (name.startsWith(key + "_") || name === key) return key;
+	}
+	return "unknown";
+}
 
-async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
-	const data = await readBenchmarkResults(fileKey);
+async function readBenchmarkResults(fileKey: FileKey) {
+	const content = await readFile(join(process.cwd(), "result", `${fileKey}.json`), "utf-8");
+	return JSON.parse(content) as { results: BenchmarkResult[] };
+}
 
-	const resultsByParser = new Map<ParserKey, BenchmarkResult>();
+function getParserEntries(data: { results: BenchmarkResult[] }, semantic: boolean): ParserEntry[] {
+	const resultsByParser = new Map<string, BenchmarkResult>();
 	for (const result of data.results) {
-		const parserKey = extractParserName(result.command) as ParserKey;
-		if (PARSERS[parserKey]) {
-			resultsByParser.set(parserKey, result);
+		const key = extractParserName(result.command);
+		if (key !== "unknown" && PARSERS[key as ParserKey]) {
+			resultsByParser.set(key, result);
 		}
 	}
 
-	const parserData: Array<{
-		key: string;
-		name: string;
-		mean: number;
-		color: string;
-		semantic: boolean;
-	}> = [];
-
+	const entries: ParserEntry[] = [];
 	for (const [key, parser] of Object.entries(PARSERS)) {
-		const parserKey = key as ParserKey;
-		const result = resultsByParser.get(parserKey);
-		if (result) {
-			parserData.push({
-				key,
-				name: parser.name,
-				mean: result.mean * 1000,
-				color: CHART_COLORS[parserKey],
-				semantic: parser.semantic,
-			});
-		}
+		if (parser.semantic !== semantic) continue;
+		entries.push({ key, name: parser.name, result: resultsByParser.get(key) ?? null });
 	}
 
-	const nonSemantic = parserData.filter((p) => !p.semantic);
-	const semantic = parserData.filter((p) => p.semantic);
-	nonSemantic.sort((a, b) => a.mean - b.mean);
-	semantic.sort((a, b) => a.mean - b.mean);
-	parserData.length = 0;
-	parserData.push(...nonSemantic, ...semantic);
+	entries.sort((a, b) => {
+		if (a.result && b.result) return a.result.mean - b.result.mean;
+		if (a.result && !b.result) return -1;
+		if (!a.result && b.result) return 1;
+		return 0;
+	});
 
-	const barCount = parserData.length;
-	const chartWidth = 500;
-	const chartHeight = barCount * 24 + 28;
+	return entries;
+}
 
-	const labels = parserData.map((p) => p.name);
-	const meanData = parserData.map((p) => p.mean);
-	const colors = parserData.map((p) => p.color);
+async function generateChart(entries: ParserEntry[], chartName: string): Promise<string> {
+	const data = entries.filter((e) => e.result != null);
+	if (data.length === 0) return "";
+
+	const labels = data.map((e) => e.name);
+	const meanData = data.map((e) => e.result!.mean * 1000);
+	const colors = data.map((e) => CHART_COLORS[e.key] ?? "#888888");
 
 	const maxTime = Math.max(...meanData);
 	const niceSteps = [10, 20, 25, 50, 100, 200, 250, 500];
 	const rawStep = maxTime / 4;
-	const step =
-		niceSteps.find((s) => s >= rawStep) || Math.ceil(rawStep / 100) * 100;
+	const step = niceSteps.find((s) => s >= rawStep) || Math.ceil(rawStep / 100) * 100;
 	const chartMax = Math.ceil(maxTime / step) * step;
 
 	const dpr = 3;
+	const chartWidth = 500;
+	const chartHeight = data.length * 24 + 28;
+
 	const chartJSNodeCanvas = new ChartJSNodeCanvas({
 		width: chartWidth * dpr,
 		height: chartHeight * dpr,
@@ -209,31 +209,20 @@ async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
 			responsive: false,
 			devicePixelRatio: 1,
 			layout: {
-				padding: {
-					right: 65 * dpr,
-					top: 2 * dpr,
-					bottom: 0,
-				},
+				padding: { right: 65 * dpr, top: 2 * dpr, bottom: 0 },
 			},
 			plugins: {
 				legend: { display: false },
 				title: { display: false },
 			},
 			scales: {
-				x: {
-					display: false,
-					beginAtZero: true,
-					max: chartMax,
-				},
+				x: { display: false, beginAtZero: true, max: chartMax },
 				y: {
 					grid: { display: false },
 					border: { display: false },
 					ticks: {
 						color: "#CAC1B0",
-						font: {
-							size: 9 * dpr,
-							weight: "500",
-						},
+						font: { size: 9 * dpr, weight: "500" },
 						padding: 3 * dpr,
 					},
 				},
@@ -254,11 +243,7 @@ async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
 						ctx.font = `${9 * dpr}px sans-serif`;
 						ctx.textAlign = "left";
 						ctx.textBaseline = "middle";
-						ctx.fillText(
-							`${value.toFixed(2)}ms`,
-							bar.x + 8 * dpr,
-							bar.y,
-						);
+						ctx.fillText(`${value.toFixed(2)}ms`, bar.x + 8 * dpr, bar.y);
 						ctx.restore();
 					}
 				},
@@ -267,35 +252,108 @@ async function generatePerformanceChart(fileKey: FileKey): Promise<string> {
 	};
 
 	const imageBuffer = await chartJSNodeCanvas.renderToBuffer(configuration);
-	const chartPath = join(process.cwd(), "charts", `${fileKey}.png`);
+	const chartPath = join(process.cwd(), "charts", `${chartName}.png`);
 	await mkdir(join(process.cwd(), "charts"), { recursive: true });
 	await writeFile(chartPath, imageBuffer);
 
-	return `charts/${fileKey}.png`;
+	return `charts/${chartName}.png`;
 }
 
-function extractParserName(command: string): string {
-	const match = command.match(/\.\/bin\/(\w+)/);
-	if (!match) return "unknown";
-	const name = match[1];
-	const keys = Object.keys(PARSERS).sort((a, b) => b.length - a.length);
-	for (const key of keys) {
-		if (name.startsWith(key + "_") || name === key) {
-			return key;
-		}
+function generateTable(entries: ParserEntry[]): string {
+	const hasMemoryData = entries.some(
+		({ result }) => result && getPeakMemory(result) !== null,
+	);
+
+	const cols = hasMemoryData ? 5 : 4;
+	const lines: string[] = [];
+
+	if (hasMemoryData) {
+		lines.push("| Parser | Mean | Min | Max | Peak Memory (RSS) |");
+		lines.push("|--------|------|-----|-----|----|");
+	} else {
+		lines.push("| Parser | Mean | Min | Max |");
+		lines.push("|--------|------|-----|-----|");
 	}
-	return "unknown";
+
+	for (const { name, result } of entries) {
+		if (!result) {
+			lines.push(hasMemoryData
+				? `| ${name} | Failed to parse | - | - | - |`
+				: `| ${name} | Failed to parse | - | - |`);
+			continue;
+		}
+
+		const memory = getPeakMemory(result);
+		const memoryStr = memory ? formatMemory(memory) : "-";
+		lines.push(hasMemoryData
+			? `| ${name} | ${formatTime(result.mean)} | ${formatTime(result.min)} | ${formatTime(result.max)} | ${memoryStr} |`
+			: `| ${name} | ${formatTime(result.mean)} | ${formatTime(result.min)} | ${formatTime(result.max)} |`);
+	}
+
+	return lines.join("\n");
 }
 
-async function getFileSize(filePath: string): Promise<number> {
-	const stats = await stat(filePath);
-	return stats.size;
+async function generateBenchmarksSection(): Promise<string> {
+	const lines = ["## Benchmarks", ""];
+
+	for (const [key, file] of Object.entries(FILES)) {
+		const fileKey = key as FileKey;
+		const fileSize = (await stat(join(process.cwd(), file.path))).size;
+		const data = await readBenchmarkResults(fileKey);
+		const entries = getParserEntries(data, false);
+
+		lines.push(`### [${file.name}](${file.source_url})`);
+		lines.push("");
+		lines.push(file.description);
+		lines.push("");
+		lines.push(`**File size:** ${formatBytes(fileSize)}`);
+		lines.push("");
+
+		const chartPath = await generateChart(entries, fileKey);
+		if (chartPath) {
+			lines.push(`![${file.name} Performance](${chartPath})`);
+			lines.push("");
+		}
+
+		lines.push(generateTable(entries));
+		lines.push("");
+	}
+
+	return lines.join("\n");
 }
 
-async function readBenchmarkResults(fileKey: FileKey): Promise<BenchmarkData> {
-	const resultPath = join(process.cwd(), "result", `${fileKey}.json`);
-	const content = await readFile(resultPath, "utf-8");
-	return JSON.parse(content);
+async function generateSemanticSection(): Promise<string> {
+	const lines: string[] = [];
+
+	lines.push(`## Semantic`);
+	lines.push("");
+	lines.push(`The ECMAScript specification defines a set of early errors that conformant implementations must report before execution. Some of these are detectable during parsing from local context alone, like \`return\` outside a function, \`yield\` outside a generator, invalid destructuring, etc. Others require knowledge of the program's scope structure and bindings, such as redeclarations, unresolved exports, private fields used outside their class, etc.`);
+	lines.push("");
+	lines.push(`Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku and Oxc defer them entirely to a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.`);
+	lines.push("");
+	lines.push(`The benchmarks below measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.`);
+	lines.push("");
+
+	for (const [key, file] of Object.entries(FILES)) {
+		const fileKey = key as FileKey;
+		const data = await readBenchmarkResults(fileKey);
+		const entries = getParserEntries(data, true);
+		if (entries.every((e) => e.result == null)) continue;
+
+		lines.push(`### ${file.name}`);
+		lines.push("");
+
+		const chartPath = await generateChart(entries, `${fileKey}_semantic`);
+		if (chartPath) {
+			lines.push(`![${file.name} Semantic Performance](${chartPath})`);
+			lines.push("");
+		}
+
+		lines.push(generateTable(entries));
+		lines.push("");
+	}
+
+	return lines.join("\n");
 }
 
 function generateParsersSection(): string {
@@ -314,126 +372,24 @@ function generateParsersSection(): string {
 	return lines.join("\n");
 }
 
-function generateSemanticSection(): string {
-	return `## What is Semantic?
+function getSystemInfo(): string {
+	const cpu = cpus()[0];
+	const cpuModel = cpu?.model || "Unknown CPU";
+	const cpuCores = cpus().length;
+	const totalMemoryGB = (totalmem() / (1024 * 1024 * 1024)).toFixed(0);
+	const os = platform();
+	const osArch = arch();
+	const osRelease = release();
+	const osName = os === "darwin" ? "macOS" : os === "win32" ? "Windows" : os === "linux" ? "Linux" : os;
 
-The ECMAScript specification defines a set of early errors that conformant implementations must report before execution. Some of these are detectable during parsing from local context alone, like \`return\` outside a function, \`yield\` outside a generator, invalid destructuring, etc. Others require knowledge of the program's scope structure and bindings, such as redeclarations, unresolved exports, private fields used outside their class, etc.
+	return `## System
 
-Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku and Oxc defer them entirely to a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.
-
-The **"+ Semantic"** rows measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.`;
-}
-
-async function generateBenchmarkTable(fileKey: FileKey): Promise<string> {
-	const data = await readBenchmarkResults(fileKey);
-	const lines: string[] = [];
-
-	const resultsByParser = new Map<ParserKey, BenchmarkResult>();
-	for (const result of data.results) {
-		const parserKey = extractParserName(result.command) as ParserKey;
-		if (PARSERS[parserKey]) {
-			resultsByParser.set(parserKey, result);
-		}
-	}
-
-	const parserEntries: Array<{
-		key: string;
-		parser: (typeof PARSERS)[ParserKey];
-		result: BenchmarkResult | null;
-	}> = [];
-
-	for (const [key, parser] of Object.entries(PARSERS)) {
-		const parserKey = key as ParserKey;
-		const result = resultsByParser.get(parserKey) || null;
-		parserEntries.push({ key, parser, result });
-	}
-
-	const nonSemantic = parserEntries.filter((e) => !e.parser.semantic);
-	const semantic = parserEntries.filter((e) => e.parser.semantic);
-
-	const sortByMean = (a: (typeof parserEntries)[number], b: (typeof parserEntries)[number]) => {
-		if (a.result && b.result) return a.result.mean - b.result.mean;
-		if (a.result && !b.result) return -1;
-		if (!a.result && b.result) return 1;
-		return 0;
-	};
-
-	nonSemantic.sort(sortByMean);
-	semantic.sort(sortByMean);
-
-	const sorted: typeof parserEntries = [...nonSemantic, ...semantic];
-
-	const hasMemoryData = sorted.some(
-		({ result }) => result && getPeakMemory(result) !== null,
-	);
-
-	if (hasMemoryData) {
-		lines.push("| Parser | Mean | Min | Max | Peak Memory (RSS) |");
-		lines.push("|--------|------|-----|-----|----|");
-	} else {
-		lines.push("| Parser | Mean | Min | Max |");
-		lines.push("|--------|------|-----|-----|");
-	}
-
-	let semanticSeparatorAdded = false;
-	for (const { parser, result } of sorted) {
-		if (parser.semantic && !semanticSeparatorAdded) {
-			if (hasMemoryData) {
-				lines.push("| | | | | |");
-			} else {
-				lines.push("| | | | |");
-			}
-			semanticSeparatorAdded = true;
-		}
-		if (result) {
-			if (hasMemoryData) {
-				const memory = getPeakMemory(result);
-				const memoryStr = memory ? formatMemory(memory) : "-";
-				lines.push(
-					`| ${parser.name} | ${formatTime(result.mean)} | ${formatTime(result.min)} | ${formatTime(result.max)} | ${memoryStr} |`,
-				);
-			} else {
-				lines.push(
-					`| ${parser.name} | ${formatTime(result.mean)} | ${formatTime(result.min)} | ${formatTime(result.max)} |`,
-				);
-			}
-		} else {
-			if (hasMemoryData) {
-				lines.push(`| ${parser.name} | Failed to parse | - | - | - |`);
-			} else {
-				lines.push(`| ${parser.name} | Failed to parse | - | - |`);
-			}
-		}
-	}
-
-	return lines.join("\n");
-}
-
-async function generateBenchmarksSection(): Promise<string> {
-	const lines = ["## Benchmarks", ""];
-
-	for (const [key, file] of Object.entries(FILES)) {
-		const fileKey = key as FileKey;
-		const filePath = join(process.cwd(), file.path);
-		const fileSize = await getFileSize(filePath);
-
-		lines.push(`### [${file.name}](${file.source_url})`);
-		lines.push("");
-		lines.push(`${file.description}`);
-		lines.push("");
-		lines.push(`**File size:** ${formatBytes(fileSize)}`);
-		lines.push("");
-
-		const chartPath = await generatePerformanceChart(fileKey);
-		lines.push(`![${file.name} Performance](${chartPath})`);
-		lines.push("");
-
-		const table = await generateBenchmarkTable(fileKey);
-		lines.push(table);
-		lines.push("");
-	}
-
-	return lines.join("\n");
+| Property | Value |
+|----------|-------|
+| OS | ${osName} ${osRelease} (${osArch}) |
+| CPU | ${cpuModel} |
+| Cores | ${cpuCores} |
+| Memory | ${totalMemoryGB} GB |`;
 }
 
 function generateRunSection(): string {
@@ -470,34 +426,6 @@ bun bench
 This will build all parsers and run benchmarks on all test files. Results are saved to the \`result/\` directory.`;
 }
 
-function getSystemInfo(): string {
-	const cpu = cpus()[0];
-	const cpuModel = cpu?.model || "Unknown CPU";
-	const cpuCores = cpus().length;
-	const totalMemoryGB = (totalmem() / (1024 * 1024 * 1024)).toFixed(0);
-	const os = platform();
-	const osArch = arch();
-	const osRelease = release();
-
-	const osName =
-		os === "darwin"
-			? "macOS"
-			: os === "win32"
-				? "Windows"
-				: os === "linux"
-					? "Linux"
-					: os;
-
-	return `## System
-
-| Property | Value |
-|----------|-------|
-| OS | ${osName} ${osRelease} (${osArch}) |
-| CPU | ${cpuModel} |
-| Cores | ${cpuCores} |
-| Memory | ${totalMemoryGB} GB |`;
-}
-
 function generateMethodologySection(): string {
 	return `## Methodology
 
@@ -521,8 +449,8 @@ function generateMethodologySection(): string {
 The benchmark uses real-world JavaScript files from popular open-source projects to ensure results reflect practical performance characteristics.`;
 }
 
-async function generateReadme(): Promise<string> {
-	const lines = [
+async function main() {
+	const readme = [
 		"# ECMAScript Native Parser Benchmark",
 		"",
 		"Benchmark ECMAScript parsers implemented in native languages.",
@@ -531,18 +459,12 @@ async function generateReadme(): Promise<string> {
 		"",
 		generateParsersSection(),
 		await generateBenchmarksSection(),
-		generateSemanticSection(),
-		"",
+		await generateSemanticSection(),
 		generateRunSection(),
 		"",
 		generateMethodologySection(),
-	];
+	].join("\n");
 
-	return lines.join("\n");
-}
-
-async function main() {
-	const readme = await generateReadme();
 	await writeFile(join(process.cwd(), "README.md"), readme);
 	console.log("README.md generated successfully!");
 }
