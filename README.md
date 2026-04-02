@@ -47,10 +47,10 @@ A JavaScript toolchain written in Zig featuring a parser, linter, formatter, pri
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Oxc | 27.50 ms | 25.48 ms | 37.25 ms | 52.7 MB |
-| Yuku | 29.62 ms | 27.67 ms | 41.13 ms | 40.6 MB |
-| Jam | 53.32 ms | 47.05 ms | 86.62 ms | 187.0 MB |
-| SWC | 53.83 ms | 50.93 ms | 63.12 ms | 88.9 MB |
+| Oxc | 28.78 ms | 25.41 ms | 41.72 ms | 52.7 MB |
+| Yuku | 29.28 ms | 26.51 ms | 44.84 ms | 40.6 MB |
+| Jam | 50.49 ms | 47.18 ms | 66.15 ms | 186.8 MB |
+| SWC | 53.35 ms | 50.60 ms | 67.84 ms | 88.9 MB |
 
 ### [three.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/three.js)
 
@@ -60,10 +60,10 @@ A JavaScript toolchain written in Zig featuring a parser, linter, formatter, pri
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Oxc | 7.19 ms | 6.04 ms | 23.41 ms | 13.1 MB |
-| Yuku | 7.81 ms | 6.65 ms | 19.55 ms | 11.1 MB |
-| Jam | 12.29 ms | 11.19 ms | 24.20 ms | 40.3 MB |
-| SWC | 12.78 ms | 11.06 ms | 39.81 ms | 21.4 MB |
+| Oxc | 6.99 ms | 6.27 ms | 18.66 ms | 13.0 MB |
+| Yuku | 7.74 ms | 6.78 ms | 20.90 ms | 11.0 MB |
+| SWC | 11.97 ms | 11.17 ms | 23.51 ms | 21.3 MB |
+| Jam | 12.97 ms | 11.38 ms | 28.49 ms | 40.3 MB |
 
 ### [antd.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/antd.js)
 
@@ -73,9 +73,9 @@ A JavaScript toolchain written in Zig featuring a parser, linter, formatter, pri
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Yuku | 21.53 ms | 20.32 ms | 35.52 ms | 31.2 MB |
-| Oxc | 24.22 ms | 20.87 ms | 39.58 ms | 41.1 MB |
-| SWC | 42.72 ms | 39.73 ms | 55.16 ms | 66.4 MB |
+| Yuku | 22.25 ms | 20.46 ms | 34.53 ms | 31.2 MB |
+| Oxc | 22.87 ms | 20.83 ms | 43.00 ms | 40.9 MB |
+| SWC | 41.07 ms | 39.10 ms | 48.31 ms | 66.4 MB |
 | Jam | Failed to parse | - | - | - |
 
 ## Semantic
@@ -92,8 +92,8 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Yuku + Semantic | 44.80 ms | 42.64 ms | 57.77 ms | 187.0 MB |
-| Oxc + Semantic | 62.98 ms | 59.04 ms | 72.40 ms | 187.0 MB |
+| Yuku + Semantic | 44.73 ms | 42.68 ms | 64.03 ms | 186.8 MB |
+| Oxc + Semantic | 61.34 ms | 58.74 ms | 68.14 ms | 186.8 MB |
 
 ### [three.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/three.js)
 
@@ -101,8 +101,8 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Yuku + Semantic | 10.93 ms | 9.89 ms | 27.61 ms | 40.3 MB |
-| Oxc + Semantic | 13.26 ms | 11.94 ms | 29.68 ms | 40.3 MB |
+| Yuku + Semantic | 11.70 ms | 10.21 ms | 22.75 ms | 40.3 MB |
+| Oxc + Semantic | 13.89 ms | 12.25 ms | 27.38 ms | 40.3 MB |
 
 ### [antd.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/antd.js)
 
@@ -110,8 +110,8 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Mean | Min | Max | Peak Memory (RSS) |
 |--------|------|-----|-----|----|
-| Yuku + Semantic | 35.72 ms | 33.03 ms | 50.62 ms | 66.4 MB |
-| Oxc + Semantic | 47.03 ms | 43.27 ms | 57.49 ms | 69.9 MB |
+| Yuku + Semantic | 37.22 ms | 32.92 ms | 55.84 ms | 66.4 MB |
+| Oxc + Semantic | 46.90 ms | 43.33 ms | 57.07 ms | 70.3 MB |
 
 ## Run Benchmarks
 
