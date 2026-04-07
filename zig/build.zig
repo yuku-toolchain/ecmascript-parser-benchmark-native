@@ -3,7 +3,7 @@ const std = @import("std");
 const files = .{
     .{ .name = "typescript", .path = "../files/typescript.js" },
     .{ .name = "three", .path = "../files/three.js" },
-    .{ .name = "antd", .path = "../files/antd.js" },
+    .{ .name = "react", .path = "../files/react.js" },
 };
 
 pub fn build(b: *std.Build) void {

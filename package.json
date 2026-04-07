@@ -3,13 +3,13 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"bench": "bun scripts/load-files.ts && bun run build && bun bench:typescript && bun bench:three && bun bench:antd && bun readme",
+		"bench": "bun scripts/load-files.ts && bun run build && bun bench:typescript && bun bench:three && bun bench:react && bun readme",
 		"build": "bun build:zig && bun build:rust",
-		"build:zig": "cd zig && zig build --release=fast && cp ./zig-out/bin/yuku_typescript ./zig-out/bin/yuku_three ./zig-out/bin/yuku_antd ./zig-out/bin/yuku_semantic_typescript ./zig-out/bin/yuku_semantic_three ./zig-out/bin/yuku_semantic_antd ./zig-out/bin/jam_typescript ./zig-out/bin/jam_three ./zig-out/bin/jam_antd ../bin",
-		"build:rust": "cd rust && cargo build --release && cp ./target/release/oxc_typescript ./target/release/oxc_three ./target/release/oxc_antd ./target/release/oxc_semantic_typescript ./target/release/oxc_semantic_three ./target/release/oxc_semantic_antd ./target/release/swc_typescript ./target/release/swc_three ./target/release/swc_antd ../bin",
+		"build:zig": "cd zig && zig build --release=fast && cp ./zig-out/bin/yuku_typescript ./zig-out/bin/yuku_three ./zig-out/bin/yuku_react ./zig-out/bin/yuku_semantic_typescript ./zig-out/bin/yuku_semantic_three ./zig-out/bin/yuku_semantic_react ./zig-out/bin/jam_typescript ./zig-out/bin/jam_three ./zig-out/bin/jam_react ../bin",
+		"build:rust": "cd rust && cargo build --release && cp ./target/release/oxc_typescript ./target/release/oxc_three ./target/release/oxc_react ./target/release/oxc_semantic_typescript ./target/release/oxc_semantic_three ./target/release/oxc_semantic_react ./target/release/swc_typescript ./target/release/swc_three ./target/release/swc_react ../bin",
 		"bench:typescript": "hyperfine --warmup 100 './bin/yuku_typescript' './bin/oxc_typescript' './bin/swc_typescript' './bin/jam_typescript' './bin/yuku_semantic_typescript' './bin/oxc_semantic_typescript' --export-json result/typescript.json",
 		"bench:three": "hyperfine --warmup 100 './bin/yuku_three' './bin/oxc_three' './bin/swc_three' './bin/jam_three' './bin/yuku_semantic_three' './bin/oxc_semantic_three' --export-json result/three.json",
-		"bench:antd": "hyperfine --warmup 100 './bin/yuku_antd' './bin/oxc_antd' './bin/swc_antd' './bin/yuku_semantic_antd' './bin/oxc_semantic_antd' --export-json result/antd.json",
+		"bench:react": "hyperfine --warmup 100 './bin/yuku_react' './bin/oxc_react' './bin/swc_react' './bin/yuku_semantic_react' './bin/oxc_semantic_react' --export-json result/react.json",
 		"readme": "bun scripts/generate-readme.ts"
 	},
 	"devDependencies": {

@@ -74,9 +74,9 @@ const FILES = {
 		path: "files/three.js",
 		source_url: `${FILES_SOURCE_URL_PREFIX}/three.js`,
 	},
-	antd: {
-		path: "files/antd.js",
-		source_url: `${FILES_SOURCE_URL_PREFIX}/antd.js`,
+	react: {
+		path: "files/react.js",
+		source_url: `${FILES_SOURCE_URL_PREFIX}/react.js`,
 	},
 } as const;
 

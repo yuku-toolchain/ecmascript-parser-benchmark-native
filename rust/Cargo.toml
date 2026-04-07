@@ -20,8 +20,8 @@ test    = false
 doctest = false
 
 [[bin]]
-name = "oxc_antd"
-path = "src/oxc_antd.rs"
+name = "oxc_react"
+path = "src/oxc_react.rs"
 test    = false
 doctest = false
 
@@ -38,8 +38,8 @@ test    = false
 doctest = false
 
 [[bin]]
-name = "oxc_semantic_antd"
-path = "src/oxc_semantic_antd.rs"
+name = "oxc_semantic_react"
+path = "src/oxc_semantic_react.rs"
 test    = false
 doctest = false
 
@@ -56,8 +56,8 @@ test    = false
 doctest = false
 
 [[bin]]
-name = "swc_antd"
-path = "src/swc_antd.rs"
+name = "swc_react"
+path = "src/swc_react.rs"
 test    = false
 doctest = false
 
