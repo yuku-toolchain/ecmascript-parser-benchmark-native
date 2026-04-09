@@ -9,7 +9,7 @@
             .hash = "jam-0.0.0-1QhPrgOUCQAHsL-kEUc6-LbRRWBfkyrxriEEp8viHV3W",
         },
         .yuku = .{
-            .url = "git+https://github.com/yuku-toolchain/yuku/?ref=HEAD#baff2fee8fad53007a12cf859df42e9f70b112da",
+            .url = "git+https://github.com/yuku-toolchain/yuku/?ref=HEAD#d86c1413cdd521238310211f3ef55416327f9696",
             .hash = "yuku-0.0.0-m6ranlCMCQBBRRF3KCftzvDaU8cJcjD7HHu0ykMx-Z1F",
         },
     },
