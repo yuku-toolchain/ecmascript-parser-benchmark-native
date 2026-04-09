@@ -398,8 +398,8 @@ function generateRunSection(): string {
 1. Clone the repository:
 
 \`\`\`bash
-git clone https://github.com/yuku-toolchain/ecmascript-native-parser-benchmark.git
-cd ecmascript-native-parser-benchmark
+git clone https://github.com/yuku-toolchain/parser-benchmark-native.git
+cd parser-benchmark-native
 \`\`\`
 
 2. Install dependencies:
