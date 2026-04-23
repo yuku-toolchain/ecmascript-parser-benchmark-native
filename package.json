@@ -10,7 +10,8 @@
 		"bench:typescript": "hyperfine --shell=none --warmup 30 --min-runs 200 ./bin/yuku_typescript ./bin/oxc_typescript ./bin/swc_typescript ./bin/yuku_semantic_typescript ./bin/oxc_semantic_typescript --export-json result/typescript.json",
 		"bench:three": "hyperfine --shell=none --warmup 30 --min-runs 200 ./bin/yuku_three ./bin/oxc_three ./bin/swc_three ./bin/yuku_semantic_three ./bin/oxc_semantic_three --export-json result/three.json",
 		"bench:react": "hyperfine --shell=none --warmup 30 --min-runs 200 ./bin/yuku_react ./bin/oxc_react ./bin/swc_react ./bin/yuku_semantic_react ./bin/oxc_semantic_react --export-json result/react.json",
-		"readme": "bun scripts/generate-readme.ts"
+		"readme": "bun scripts/generate-readme.ts",
+		"update-parsers": "cd rust && cargo update && cd .. && cd zig && zig fetch --save git+https://github.com/yuku-toolchain/yuku/#HEAD"
 	},
 	"devDependencies": {
 		"@types/bun": "latest",
