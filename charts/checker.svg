@@ -3,19 +3,19 @@
     text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; fill: #848d97; dominant-baseline: central; font-variant-numeric: tabular-nums }
     .ratio { font-size: 12px; fill: #fff }
   </style>
-  <text x="64" y="11" text-anchor="end">Yuku</text>
-  <rect x="74" y="0" width="206" height="22" rx="4" fill="#FF6B35"/>
-  <text x="288" y="11">5.32 ms</text>
-  <text x="64" y="41" text-anchor="end">SWC Next</text>
-  <rect x="74" y="30" width="207" height="22" rx="4" fill="#2DBD85"/>
-  <text x="289" y="41">5.36 ms</text>
-  <text class="ratio" x="273" y="41" text-anchor="end">1.01×</text>
+  <text x="64" y="11" text-anchor="end">SWC Next</text>
+  <rect x="74" y="0" width="202" height="22" rx="4" fill="#2DBD85"/>
+  <text x="284" y="11">4.50 ms</text>
+  <text x="64" y="41" text-anchor="end">Yuku</text>
+  <rect x="74" y="30" width="212" height="22" rx="4" fill="#FF6B35"/>
+  <text x="294" y="41">4.71 ms</text>
+  <text class="ratio" x="278" y="41" text-anchor="end">1.05×</text>
   <text x="64" y="71" text-anchor="end">Oxc</text>
-  <rect x="74" y="60" width="307" height="22" rx="4" fill="#F72585"/>
-  <text x="389" y="71">7.94 ms</text>
-  <text class="ratio" x="373" y="71" text-anchor="end">1.49×</text>
+  <rect x="74" y="60" width="255" height="22" rx="4" fill="#F72585"/>
+  <text x="337" y="71">5.67 ms</text>
+  <text class="ratio" x="321" y="71" text-anchor="end">1.26×</text>
   <text x="64" y="101" text-anchor="end">SWC</text>
   <rect x="74" y="90" width="486" height="22" rx="4" fill="#4CC9F0"/>
-  <text x="568" y="101">12.59 ms</text>
-  <text class="ratio" x="552" y="101" text-anchor="end">2.36×</text>
+  <text x="568" y="101">10.82 ms</text>
+  <text class="ratio" x="552" y="101" text-anchor="end">2.40×</text>
 </svg>

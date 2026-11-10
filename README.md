@@ -7,9 +7,9 @@ Benchmarks for ECMAScript parsers compiled to native binaries (Zig, Rust), measu
 | Property | Value |
 |----------|-------|
 | OS | macOS 25.6.0 (arm64) |
-| CPU | Apple M3 |
-| Cores | 8 |
-| Memory | 16 GB |
+| CPU | Apple M5 Max |
+| Cores | 18 |
+| Memory | 64 GB |
 
 ## Parsers
 
@@ -47,10 +47,10 @@ The next-generation SWC JavaScript and TypeScript parser.
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| SWC Next | 15.75 ms | 15.19 ms | 28.00 ms | 1.00× |
-| Yuku | 15.88 ms | 15.29 ms | 18.62 ms | 1.01× |
-| Oxc | 25.77 ms | 25.09 ms | 26.86 ms | 1.64× |
-| SWC | 38.04 ms | 36.44 ms | 119.34 ms | 2.42× |
+| SWC Next | 12.29 ms | 11.74 ms | 15.08 ms | 1.00× |
+| Yuku | 13.84 ms | 13.57 ms | 15.83 ms | 1.13× |
+| Oxc | 17.73 ms | 16.98 ms | 18.74 ms | 1.44× |
+| SWC | 32.59 ms | 30.40 ms | 39.48 ms | 2.65× |
 
 ### [checker.ts](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/checker.ts)
 
@@ -60,10 +60,10 @@ The next-generation SWC JavaScript and TypeScript parser.
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku | 5.32 ms | 5.26 ms | 5.63 ms | 1.00× |
-| SWC Next | 5.36 ms | 5.33 ms | 5.53 ms | 1.01× |
-| Oxc | 7.94 ms | 7.90 ms | 8.96 ms | 1.49× |
-| SWC | 12.59 ms | 11.91 ms | 21.46 ms | 2.36× |
+| SWC Next | 4.50 ms | 4.17 ms | 5.65 ms | 1.00× |
+| Yuku | 4.71 ms | 4.51 ms | 5.70 ms | 1.05× |
+| Oxc | 5.67 ms | 5.33 ms | 8.19 ms | 1.26× |
+| SWC | 10.82 ms | 9.75 ms | 13.27 ms | 2.40× |
 
 ### [lib.dom.d.ts](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/lib.dom.d.ts)
 
@@ -73,10 +73,10 @@ The next-generation SWC JavaScript and TypeScript parser.
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| SWC Next | 1.82 ms | 1.80 ms | 2.03 ms | 1.00× |
-| Yuku | 2.03 ms | 2.01 ms | 2.12 ms | 1.12× |
-| Oxc | 2.38 ms | 2.36 ms | 2.81 ms | 1.31× |
-| SWC | 4.46 ms | 4.38 ms | 6.52 ms | 2.46× |
+| SWC Next | 1.26 ms | 1.21 ms | 1.54 ms | 1.00× |
+| Yuku | 1.60 ms | 1.56 ms | 1.70 ms | 1.27× |
+| Oxc | 1.81 ms | 1.61 ms | 3.41 ms | 1.44× |
+| SWC | 3.85 ms | 3.64 ms | 4.97 ms | 3.05× |
 
 ### [react.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/react.js)
 
@@ -86,10 +86,10 @@ The next-generation SWC JavaScript and TypeScript parser.
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| SWC Next | 0.08 ms | 0.08 ms | 0.09 ms | 1.00× |
-| Yuku | 0.09 ms | 0.09 ms | 0.21 ms | 1.14× |
-| Oxc | 0.16 ms | 0.16 ms | 0.17 ms | 1.97× |
-| SWC | 0.23 ms | 0.23 ms | 0.25 ms | 2.87× |
+| SWC Next | 0.06 ms | 0.06 ms | 0.12 ms | 1.00× |
+| Yuku | 0.07 ms | 0.07 ms | 0.09 ms | 1.30× |
+| Oxc | 0.09 ms | 0.08 ms | 0.16 ms | 1.48× |
+| SWC | 0.21 ms | 0.20 ms | 0.34 ms | 3.68× |
 
 ## Semantic
 
@@ -105,9 +105,9 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| SWC Next + Semantic | 31.55 ms | 31.07 ms | 39.60 ms | 1.00× |
-| Yuku + Semantic | 33.51 ms | 32.97 ms | 56.63 ms | 1.06× |
-| Oxc + Semantic | 45.16 ms | 44.02 ms | 47.25 ms | 1.43× |
+| SWC Next + Semantic | 26.33 ms | 25.27 ms | 30.64 ms | 1.00× |
+| Yuku + Semantic | 29.39 ms | 28.14 ms | 35.24 ms | 1.12× |
+| Oxc + Semantic | 33.82 ms | 32.74 ms | 40.61 ms | 1.28× |
 
 ### [checker.ts](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/checker.ts)
 
@@ -115,9 +115,9 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| SWC Next + Semantic | 11.50 ms | 11.42 ms | 12.03 ms | 1.00× |
-| Yuku + Semantic | 12.04 ms | 11.65 ms | 12.75 ms | 1.05× |
-| Oxc + Semantic | 15.18 ms | 14.87 ms | 19.70 ms | 1.32× |
+| SWC Next + Semantic | 10.07 ms | 9.74 ms | 15.47 ms | 1.00× |
+| Yuku + Semantic | 10.63 ms | 10.11 ms | 11.14 ms | 1.06× |
+| Oxc + Semantic | 11.59 ms | 11.09 ms | 13.63 ms | 1.15× |
 
 ### [lib.dom.d.ts](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/lib.dom.d.ts)
 
@@ -125,9 +125,9 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| SWC Next + Semantic | 3.24 ms | 3.21 ms | 3.48 ms | 1.00× |
-| Yuku + Semantic | 3.31 ms | 3.26 ms | 3.59 ms | 1.02× |
-| Oxc + Semantic | 3.93 ms | 3.85 ms | 6.75 ms | 1.21× |
+| SWC Next + Semantic | 2.62 ms | 2.40 ms | 3.16 ms | 1.00× |
+| Yuku + Semantic | 2.76 ms | 2.65 ms | 3.82 ms | 1.05× |
+| Oxc + Semantic | 3.04 ms | 2.84 ms | 3.87 ms | 1.16× |
 
 ### [react.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/react.js)
 
@@ -135,9 +135,9 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| SWC Next + Semantic | 0.17 ms | 0.17 ms | 0.18 ms | 1.00× |
-| Yuku + Semantic | 0.20 ms | 0.19 ms | 0.73 ms | 1.19× |
-| Oxc + Semantic | 0.28 ms | 0.28 ms | 0.30 ms | 1.68× |
+| SWC Next + Semantic | 0.12 ms | 0.12 ms | 0.21 ms | 1.00× |
+| Yuku + Semantic | 0.16 ms | 0.15 ms | 0.28 ms | 1.29× |
+| Oxc + Semantic | 0.18 ms | 0.17 ms | 0.29 ms | 1.48× |
 
 ## Run Benchmarks
 
@@ -145,7 +145,7 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 - [Bun](https://bun.sh/) - JavaScript runtime and package manager
 - [Rust](https://www.rust-lang.org/tools/install) - For building Rust-based parsers
-- [Zig](https://ziglang.org/download/) 0.17.0 - Required by Yuku 0.23.0
+- [Zig](https://ziglang.org/download/) 0.17.0 - Required by Yuku 0.27.0
 
 ### Steps
 

@@ -327,7 +327,7 @@ function generateRunSection(): string {
 
 - [Bun](https://bun.sh/) - JavaScript runtime and package manager
 - [Rust](https://www.rust-lang.org/tools/install) - For building Rust-based parsers
-- [Zig](https://ziglang.org/download/) 0.17.0 - Required by Yuku 0.23.0
+- [Zig](https://ziglang.org/download/) 0.17.0 - Required by Yuku 0.27.0
 
 ### Steps
 

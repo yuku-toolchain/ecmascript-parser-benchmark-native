@@ -4,18 +4,18 @@
     .ratio { font-size: 12px; fill: #fff }
   </style>
   <text x="64" y="11" text-anchor="end">SWC Next</text>
-  <rect x="74" y="0" width="201" height="22" rx="4" fill="#2DBD85"/>
-  <text x="283" y="11">15.75 ms</text>
+  <rect x="74" y="0" width="183" height="22" rx="4" fill="#2DBD85"/>
+  <text x="265" y="11">12.29 ms</text>
   <text x="64" y="41" text-anchor="end">Yuku</text>
-  <rect x="74" y="30" width="203" height="22" rx="4" fill="#FF6B35"/>
-  <text x="285" y="41">15.88 ms</text>
-  <text class="ratio" x="269" y="41" text-anchor="end">1.01×</text>
+  <rect x="74" y="30" width="206" height="22" rx="4" fill="#FF6B35"/>
+  <text x="288" y="41">13.84 ms</text>
+  <text class="ratio" x="272" y="41" text-anchor="end">1.13×</text>
   <text x="64" y="71" text-anchor="end">Oxc</text>
-  <rect x="74" y="60" width="329" height="22" rx="4" fill="#F72585"/>
-  <text x="411" y="71">25.77 ms</text>
-  <text class="ratio" x="395" y="71" text-anchor="end">1.64×</text>
+  <rect x="74" y="60" width="264" height="22" rx="4" fill="#F72585"/>
+  <text x="346" y="71">17.73 ms</text>
+  <text class="ratio" x="330" y="71" text-anchor="end">1.44×</text>
   <text x="64" y="101" text-anchor="end">SWC</text>
   <rect x="74" y="90" width="486" height="22" rx="4" fill="#4CC9F0"/>
-  <text x="568" y="101">38.04 ms</text>
-  <text class="ratio" x="552" y="101" text-anchor="end">2.42×</text>
+  <text x="568" y="101">32.59 ms</text>
+  <text class="ratio" x="552" y="101" text-anchor="end">2.65×</text>
 </svg>

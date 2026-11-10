@@ -4,14 +4,14 @@
     .ratio { font-size: 12px; fill: #fff }
   </style>
   <text x="139" y="11" text-anchor="end">SWC Next + Semantic</text>
-  <rect x="149" y="0" width="339" height="22" rx="4" fill="#218F65"/>
-  <text x="496" y="11">3.24 ms</text>
+  <rect x="149" y="0" width="354" height="22" rx="4" fill="#218F65"/>
+  <text x="511" y="11">2.62 ms</text>
   <text x="139" y="41" text-anchor="end">Yuku + Semantic</text>
-  <rect x="149" y="30" width="346" height="22" rx="4" fill="#E8890C"/>
-  <text x="503" y="41">3.31 ms</text>
-  <text class="ratio" x="487" y="41" text-anchor="end">1.02×</text>
+  <rect x="149" y="30" width="373" height="22" rx="4" fill="#E8890C"/>
+  <text x="530" y="41">2.76 ms</text>
+  <text class="ratio" x="514" y="41" text-anchor="end">1.05×</text>
   <text x="139" y="71" text-anchor="end">Oxc + Semantic</text>
   <rect x="149" y="60" width="411" height="22" rx="4" fill="#B5179E"/>
-  <text x="568" y="71">3.93 ms</text>
-  <text class="ratio" x="552" y="71" text-anchor="end">1.21×</text>
+  <text x="568" y="71">3.04 ms</text>
+  <text class="ratio" x="552" y="71" text-anchor="end">1.16×</text>
 </svg>
