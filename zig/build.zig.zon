@@ -1,12 +1,12 @@
 .{
     .name = .zig_parsers,
     .version = "0.0.0",
-    .minimum_zig_version = "0.16.0-dev.2368+380ea6fb5",
+    .minimum_zig_version = "0.17.0",
     .fingerprint = 0xa1bd1b16d2a0c0b3,
     .dependencies = .{
         .yuku = .{
-            .url = "git+https://github.com/yuku-toolchain/yuku/?ref=HEAD#bb688a808dcfe6dc55805b03de58090009ef54fb",
-            .hash = "yuku-0.23.0-m6ranvSIEgB7-H8Tzx9rIwJromaEO05PvvZTe03ex0yM",
+            .url = "git+https://github.com/yuku-toolchain/yuku/#3c1d1ac0be2c21b1cc750cfeb6e1127c52e89e0c",
+            .hash = "yuku-0.27.0-m6ranntZEgBrjcOdOlcz0WICWk60x4iTbL0Dpe1DCgoM",
         },
     },
     .paths = .{

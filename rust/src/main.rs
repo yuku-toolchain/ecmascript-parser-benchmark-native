@@ -6,6 +6,11 @@ use oxc_parser::Parser as OxcParser;
 use oxc_semantic::SemanticBuilder;
 use oxc_span::SourceType;
 
+use swc_next_allocator::Allocator as SwcNextAllocator;
+use swc_next_ecma_ast::Lang;
+use swc_next_ecma_parser::{NoTokenParserConfig, Options, Parser as SwcNextParser};
+use swc_next_ecma_semantic::{AnalyzeOptions, SyntaxChecks, analyze};
+
 use swc_common::BytePos;
 use swc_ecma_parser::{EsSyntax, Parser as SwcParser, StringInput, Syntax, TsSyntax};
 
@@ -83,6 +88,27 @@ fn bench_swc(src: &str, syntax: Syntax) -> Stats {
     })
 }
 
+fn bench_swc_next(src: &str, lang: Lang, semantic: bool) -> Stats {
+    let options = Options { lang, ..Options::default() };
+    measure(|| {
+        let allocator = SwcNextAllocator::new();
+        let start = Instant::now();
+        let ret = SwcNextParser::init(&allocator, black_box(src), options, NoTokenParserConfig).parse();
+        let sem = semantic.then(|| analyze(&ret.ast, AnalyzeOptions {
+            check_syntax: SyntaxChecks::all(),
+            ..Default::default()
+        }));
+        let dt = start.elapsed().as_nanos() as u64;
+        black_box(&ret);
+        black_box(&sem);
+        assert!(ret.diagnostics.is_empty(), "SWC Next parse diagnostics: {:?}", ret.diagnostics);
+        if let Some(sem) = &sem {
+            assert!(sem.diagnostics.is_empty(), "SWC Next semantic diagnostics: {:?}", sem.diagnostics);
+        }
+        dt
+    })
+}
+
 fn main() {
     let mut out = String::from("{\"results\":[");
     let mut first = true;
@@ -100,6 +126,8 @@ fn main() {
             ("oxc", bench_oxc(&source, st)),
             ("oxc_semantic", bench_oxc_semantic(&source, st)),
             ("swc", bench_swc(&source, swc_syntax(&path))),
+            ("swc_next", bench_swc_next(&source, Lang::from_path(&path), false)),
+            ("swc_next_semantic", bench_swc_next(&source, Lang::from_path(&path), true)),
         ];
         for (parser, s) in cases {
             if !first {

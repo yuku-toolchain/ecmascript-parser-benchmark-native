@@ -23,7 +23,7 @@ fn bench(io: std.Io, comptime case: Case, source: []const u8, path: []const u8) 
 
     for (0..warmup_runs) |_| {
         var tree = try parser.parse(gpa.allocator(), source, opts);
-        if (case == .semantic) _ = try parser.semantic.analyze(&tree);
+        if (case == .semantic) _ = try parser.semantic.analyze(&tree, .{ .check = true });
         std.mem.doNotOptimizeAway(tree.nodes.len);
         tree.deinit();
         _ = gpa.reset(.retain_capacity);
@@ -33,7 +33,7 @@ fn bench(io: std.Io, comptime case: Case, source: []const u8, path: []const u8) 
     for (&samples) |*sample| {
         const start = std.Io.Clock.now(.awake, io);
         var tree = try parser.parse(gpa.allocator(), source, opts);
-        if (case == .semantic) _ = try parser.semantic.analyze(&tree);
+        if (case == .semantic) _ = try parser.semantic.analyze(&tree, .{ .check = true });
         const end = std.Io.Clock.now(.awake, io);
 
         std.mem.doNotOptimizeAway(tree.nodes.len);

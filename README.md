@@ -7,9 +7,9 @@ Benchmarks for ECMAScript parsers compiled to native binaries (Zig, Rust), measu
 | Property | Value |
 |----------|-------|
 | OS | macOS 25.6.0 (arm64) |
-| CPU | Apple M3 |
-| Cores | 8 |
-| Memory | 16 GB |
+| CPU | Apple M5 Max |
+| Cores | 18 |
+| Memory | 64 GB |
 
 ## Parsers
 
@@ -31,6 +31,12 @@ A high-performance JavaScript and TypeScript parser written in Rust.
 
 An extensible Rust-based platform for compiling and bundling JavaScript and TypeScript.
 
+### [SWC Next](https://github.com/swc-project/swc-next)
+
+**Language:** Rust
+
+The next-generation SWC JavaScript and TypeScript parser.
+
 ## Benchmarks
 
 ### [typescript.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/typescript.js)
@@ -41,9 +47,10 @@ An extensible Rust-based platform for compiling and bundling JavaScript and Type
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku | 17.61 ms | 16.69 ms | 18.20 ms | 1.00× |
-| Oxc | 24.38 ms | 24.10 ms | 26.07 ms | 1.38× |
-| SWC | 41.67 ms | 41.00 ms | 42.85 ms | 2.37× |
+| SWC Next | 12.29 ms | 11.74 ms | 15.08 ms | 1.00× |
+| Yuku | 13.84 ms | 13.57 ms | 15.83 ms | 1.13× |
+| Oxc | 17.73 ms | 16.98 ms | 18.74 ms | 1.44× |
+| SWC | 32.59 ms | 30.40 ms | 39.48 ms | 2.65× |
 
 ### [checker.ts](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/checker.ts)
 
@@ -53,9 +60,10 @@ An extensible Rust-based platform for compiling and bundling JavaScript and Type
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku | 6.09 ms | 5.78 ms | 6.19 ms | 1.00× |
-| Oxc | 7.85 ms | 7.80 ms | 8.03 ms | 1.29× |
-| SWC | 13.40 ms | 13.15 ms | 14.09 ms | 2.20× |
+| SWC Next | 4.50 ms | 4.17 ms | 5.65 ms | 1.00× |
+| Yuku | 4.71 ms | 4.51 ms | 5.70 ms | 1.05× |
+| Oxc | 5.67 ms | 5.33 ms | 8.19 ms | 1.26× |
+| SWC | 10.82 ms | 9.75 ms | 13.27 ms | 2.40× |
 
 ### [lib.dom.d.ts](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/lib.dom.d.ts)
 
@@ -65,9 +73,10 @@ An extensible Rust-based platform for compiling and bundling JavaScript and Type
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku | 2.28 ms | 2.15 ms | 2.33 ms | 1.00× |
-| Oxc | 2.33 ms | 2.29 ms | 2.49 ms | 1.02× |
-| SWC | 4.84 ms | 4.75 ms | 5.25 ms | 2.12× |
+| SWC Next | 1.26 ms | 1.21 ms | 1.54 ms | 1.00× |
+| Yuku | 1.60 ms | 1.56 ms | 1.70 ms | 1.27× |
+| Oxc | 1.81 ms | 1.61 ms | 3.41 ms | 1.44× |
+| SWC | 3.85 ms | 3.64 ms | 4.97 ms | 3.05× |
 
 ### [react.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/react.js)
 
@@ -77,17 +86,18 @@ An extensible Rust-based platform for compiling and bundling JavaScript and Type
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku | 0.11 ms | 0.11 ms | 0.11 ms | 1.00× |
-| Oxc | 0.16 ms | 0.16 ms | 0.18 ms | 1.50× |
-| SWC | 0.29 ms | 0.27 ms | 0.41 ms | 2.68× |
+| SWC Next | 0.06 ms | 0.06 ms | 0.12 ms | 1.00× |
+| Yuku | 0.07 ms | 0.07 ms | 0.09 ms | 1.30× |
+| Oxc | 0.09 ms | 0.08 ms | 0.16 ms | 1.48× |
+| SWC | 0.21 ms | 0.20 ms | 0.34 ms | 3.68× |
 
 ## Semantic
 
 The ECMAScript specification defines a set of early errors that conformant implementations must report before execution. Some of these are detectable during parsing from local context alone, like `return` outside a function, `yield` outside a generator, invalid destructuring, etc. Others require knowledge of the program's scope structure and bindings, such as redeclarations, unresolved exports, private fields used outside their class, etc.
 
-Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku and Oxc defer them entirely to a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.
+Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku, Oxc, and SWC Next provide a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.
 
-The benchmarks below measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.
+The benchmarks below measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. SWC Next enables `SyntaxChecks::all()`; Yuku enables `check = true`. These timings do not establish equivalent conformance coverage.
 
 ### [typescript.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/typescript.js)
 
@@ -95,8 +105,9 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku + Semantic | 42.62 ms | 41.22 ms | 44.04 ms | 1.00× |
-| Oxc + Semantic | 54.73 ms | 53.89 ms | 56.92 ms | 1.28× |
+| SWC Next + Semantic | 26.33 ms | 25.27 ms | 30.64 ms | 1.00× |
+| Yuku + Semantic | 29.39 ms | 28.14 ms | 35.24 ms | 1.12× |
+| Oxc + Semantic | 33.82 ms | 32.74 ms | 40.61 ms | 1.28× |
 
 ### [checker.ts](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/checker.ts)
 
@@ -104,8 +115,9 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku + Semantic | 15.33 ms | 14.96 ms | 16.96 ms | 1.00× |
-| Oxc + Semantic | 18.17 ms | 18.02 ms | 18.65 ms | 1.19× |
+| SWC Next + Semantic | 10.07 ms | 9.74 ms | 15.47 ms | 1.00× |
+| Yuku + Semantic | 10.63 ms | 10.11 ms | 11.14 ms | 1.06× |
+| Oxc + Semantic | 11.59 ms | 11.09 ms | 13.63 ms | 1.15× |
 
 ### [lib.dom.d.ts](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/lib.dom.d.ts)
 
@@ -113,8 +125,9 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku + Semantic | 4.34 ms | 4.25 ms | 4.84 ms | 1.00× |
-| Oxc + Semantic | 4.62 ms | 4.54 ms | 5.24 ms | 1.06× |
+| SWC Next + Semantic | 2.62 ms | 2.40 ms | 3.16 ms | 1.00× |
+| Yuku + Semantic | 2.76 ms | 2.65 ms | 3.82 ms | 1.05× |
+| Oxc + Semantic | 3.04 ms | 2.84 ms | 3.87 ms | 1.16× |
 
 ### [react.js](https://raw.githubusercontent.com/yuku-toolchain/parser-benchmark-files/refs/heads/main/react.js)
 
@@ -122,8 +135,9 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 | Parser | Median | Min | p99 | Relative |
 |--------|--------|-----|-----|----------|
-| Yuku + Semantic | 0.27 ms | 0.25 ms | 0.32 ms | 1.00× |
-| Oxc + Semantic | 0.35 ms | 0.34 ms | 0.37 ms | 1.30× |
+| SWC Next + Semantic | 0.12 ms | 0.12 ms | 0.21 ms | 1.00× |
+| Yuku + Semantic | 0.16 ms | 0.15 ms | 0.28 ms | 1.29× |
+| Oxc + Semantic | 0.18 ms | 0.17 ms | 0.29 ms | 1.48× |
 
 ## Run Benchmarks
 
@@ -131,7 +145,7 @@ The benchmarks below measure parsing followed by this additional pass, which bui
 
 - [Bun](https://bun.sh/) - JavaScript runtime and package manager
 - [Rust](https://www.rust-lang.org/tools/install) - For building Rust-based parsers
-- [Zig](https://ziglang.org/download/) - For building Zig-based parsers (requires nightly/development version)
+- [Zig](https://ziglang.org/download/) 0.17.0 - Required by Yuku 0.27.0
 
 ### Steps
 
