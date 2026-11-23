@@ -29,6 +29,20 @@ const PARSERS = {
     url: "https://github.com/swc-project/swc",
     semantic: false,
   },
+  swc_next: {
+    name: "SWC Next",
+    language: "Rust",
+    description: "The next-generation SWC JavaScript and TypeScript parser.",
+    url: "https://github.com/swc-project/swc-next",
+    semantic: false,
+  },
+  swc_next_semantic: {
+    name: "SWC Next + Semantic",
+    language: "Rust",
+    description: "SWC Next parser with semantic analysis and syntax checks.",
+    url: "https://github.com/swc-project/swc-next",
+    semantic: true,
+  },
   yuku_semantic: {
     name: "Yuku + Semantic",
     language: "Zig",
@@ -49,6 +63,8 @@ const CHART_COLORS: Record<string, string> = {
   yuku: "#FF6B35",
   oxc: "#F72585",
   swc: "#4CC9F0",
+  swc_next: "#2DBD85",
+  swc_next_semantic: "#218F65",
   yuku_semantic: "#E8890C",
   oxc_semantic: "#B5179E",
 };
@@ -234,11 +250,11 @@ async function generateSemanticSection(): Promise<string> {
   );
   lines.push("");
   lines.push(
-    `Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku and Oxc defer them entirely to a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.`,
+    `Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku, Oxc, and SWC Next provide a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.`,
   );
   lines.push("");
   lines.push(
-    `The benchmarks below measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.`,
+    `The benchmarks below measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. SWC Next enables \`SyntaxChecks::all()\`; Yuku enables \`check = true\`. These timings do not establish equivalent conformance coverage.`,
   );
   lines.push("");
 
@@ -311,7 +327,7 @@ function generateRunSection(): string {
 
 - [Bun](https://bun.sh/) - JavaScript runtime and package manager
 - [Rust](https://www.rust-lang.org/tools/install) - For building Rust-based parsers
-- [Zig](https://ziglang.org/download/) - For building Zig-based parsers (requires nightly/development version)
+- [Zig](https://ziglang.org/download/) 0.17.0 - Required by Yuku 0.27.0
 
 ### Steps
 

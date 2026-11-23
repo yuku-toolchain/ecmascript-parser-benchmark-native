@@ -4,13 +4,18 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-oxc_allocator = "0.102.0"
-oxc_parser = "0.102.0"
-oxc_semantic = "0.102.0"
-oxc_span = "0.102.0"
+oxc_allocator = "0.158.0"
+oxc_parser = "0.158.0"
+oxc_semantic = "0.158.0"
+oxc_span = "0.158.0"
 
-swc_ecma_parser = { version = "33.0.0", features = ["typescript"] }
-swc_common = "18.0.1"
+swc_ecma_parser = { version = "47.0.0", features = ["typescript"] }
+swc_common = "27.0.0"
+
+swc_next_allocator = "=0.6.1"
+swc_next_ecma_ast = "=0.6.1"
+swc_next_ecma_parser = "=0.6.1"
+swc_next_ecma_semantic = "=0.6.1"
 
 mimalloc = { package = "mimalloc-safe", version = "0.1.52" }
 
