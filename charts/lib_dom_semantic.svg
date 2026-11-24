@@ -4,10 +4,10 @@
     .ratio { font-size: 12px; fill: #fff }
   </style>
   <text x="108" y="11" text-anchor="end">Yuku + Semantic</text>
-  <rect x="118" y="0" width="415" height="22" rx="4" fill="#E8890C"/>
-  <text x="541" y="11">4.34 ms</text>
+  <rect x="118" y="0" width="246" height="22" rx="4" fill="#E8890C"/>
+  <text x="372" y="11">2.61 ms</text>
   <text x="108" y="41" text-anchor="end">Oxc + Semantic</text>
   <rect x="118" y="30" width="442" height="22" rx="4" fill="#B5179E"/>
-  <text x="568" y="41">4.62 ms</text>
-  <text class="ratio" x="552" y="41" text-anchor="end">1.06×</text>
+  <text x="568" y="41">4.69 ms</text>
+  <text class="ratio" x="552" y="41" text-anchor="end">1.79×</text>
 </svg>

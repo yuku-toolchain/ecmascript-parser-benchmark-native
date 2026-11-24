@@ -4,14 +4,14 @@
     .ratio { font-size: 12px; fill: #fff }
   </style>
   <text x="33" y="11" text-anchor="end">Yuku</text>
-  <rect x="43" y="0" width="244" height="22" rx="4" fill="#FF6B35"/>
-  <text x="295" y="11">2.28 ms</text>
+  <rect x="43" y="0" width="143" height="22" rx="4" fill="#FF6B35"/>
+  <text x="194" y="11">1.45 ms</text>
   <text x="33" y="41" text-anchor="end">Oxc</text>
-  <rect x="43" y="30" width="248" height="22" rx="4" fill="#F72585"/>
-  <text x="299" y="41">2.33 ms</text>
-  <text class="ratio" x="283" y="41" text-anchor="end">1.02×</text>
+  <rect x="43" y="30" width="253" height="22" rx="4" fill="#F72585"/>
+  <text x="304" y="41">2.57 ms</text>
+  <text class="ratio" x="288" y="41" text-anchor="end">1.77×</text>
   <text x="33" y="71" text-anchor="end">SWC</text>
   <rect x="43" y="60" width="517" height="22" rx="4" fill="#4CC9F0"/>
-  <text x="568" y="71">4.84 ms</text>
-  <text class="ratio" x="552" y="71" text-anchor="end">2.12×</text>
+  <text x="568" y="71">5.26 ms</text>
+  <text class="ratio" x="552" y="71" text-anchor="end">3.62×</text>
 </svg>
