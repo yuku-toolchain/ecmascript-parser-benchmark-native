@@ -12,6 +12,40 @@ fn nsToS(ns: u64) f64 {
     return @as(f64, @floatFromInt(ns)) / std.time.ns_per_s;
 }
 
+/// Times one run. `.parse` times parsing; `.semantic` parses untimed, then times only
+/// building the semantic model (no early-error checks).
+fn sample(
+    io: std.Io,
+    comptime case: Case,
+    allocator: std.mem.Allocator,
+    source: []const u8,
+    opts: parser.Options,
+) !u64 {
+    var start: std.Io.Timestamp = undefined;
+    var end: std.Io.Timestamp = undefined;
+
+    switch (case) {
+        .parse => {
+            start = std.Io.Clock.now(.awake, io);
+            var tree = try parser.parse(allocator, source, opts);
+            end = std.Io.Clock.now(.awake, io);
+            std.mem.doNotOptimizeAway(tree.nodes.len);
+            tree.deinit();
+        },
+        .semantic => {
+            var tree = try parser.parse(allocator, source, opts);
+            start = std.Io.Clock.now(.awake, io);
+            const sem = try parser.semantic.analyze(&tree, .{ .check = false });
+            end = std.Io.Clock.now(.awake, io);
+            std.mem.doNotOptimizeAway(sem.symbols.len);
+            std.mem.doNotOptimizeAway(sem.references.len);
+            tree.deinit();
+        },
+    }
+
+    return @intCast(start.durationTo(end).toNanoseconds());
+}
+
 fn bench(io: std.Io, comptime case: Case, source: []const u8, path: []const u8) !Stats {
     const opts: parser.Options = .{
         .lang = .fromPath(path),
@@ -22,24 +56,14 @@ fn bench(io: std.Io, comptime case: Case, source: []const u8, path: []const u8) 
     defer gpa.deinit();
 
     for (0..warmup_runs) |_| {
-        var tree = try parser.parse(gpa.allocator(), source, opts);
-        if (case == .semantic) _ = try parser.semantic.analyze(&tree, .{ .check = true });
-        std.mem.doNotOptimizeAway(tree.nodes.len);
-        tree.deinit();
+        _ = try sample(io, case, gpa.allocator(), source, opts);
         _ = gpa.reset(.retain_capacity);
     }
 
     var samples: [measured_runs]u64 = undefined;
-    for (&samples) |*sample| {
-        const start = std.Io.Clock.now(.awake, io);
-        var tree = try parser.parse(gpa.allocator(), source, opts);
-        if (case == .semantic) _ = try parser.semantic.analyze(&tree, .{ .check = true });
-        const end = std.Io.Clock.now(.awake, io);
-
-        std.mem.doNotOptimizeAway(tree.nodes.len);
-        tree.deinit();
+    for (&samples) |*s| {
+        s.* = try sample(io, case, gpa.allocator(), source, opts);
         _ = gpa.reset(.retain_capacity);
-        sample.* = @intCast(start.durationTo(end).toNanoseconds());
     }
 
     std.mem.sort(u64, &samples, {}, std.sort.asc(u64));

@@ -60,11 +60,11 @@ fn bench_oxc(src: &str, st: SourceType) -> Stats {
 fn bench_oxc_semantic(src: &str, st: SourceType) -> Stats {
     measure(|| {
         let allocator = Allocator::default();
-        let start = Instant::now();
         let ret = OxcParser::new(&allocator, black_box(src), st).parse();
+        let start = Instant::now();
         let sem = SemanticBuilder::new()
-            .with_check_syntax_error(true)
-            .build(&ret.program);
+            .with_check_syntax_error(false)
+            .build(black_box(&ret.program));
         let dt = start.elapsed().as_nanos() as u64;
         black_box(&sem);
         black_box(&ret);

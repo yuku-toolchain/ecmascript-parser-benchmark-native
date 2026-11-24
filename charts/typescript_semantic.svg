@@ -3,11 +3,11 @@
     text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif; fill: #848d97; dominant-baseline: central; font-variant-numeric: tabular-nums }
     .ratio { font-size: 12px; fill: #fff }
   </style>
-  <text x="108" y="11" text-anchor="end">Yuku + Semantic</text>
-  <rect x="118" y="0" width="223" height="22" rx="4" fill="#E8890C"/>
-  <text x="349" y="11">28.14 ms</text>
-  <text x="108" y="41" text-anchor="end">Oxc + Semantic</text>
-  <rect x="118" y="30" width="442" height="22" rx="4" fill="#B5179E"/>
-  <text x="568" y="41">55.80 ms</text>
-  <text class="ratio" x="552" y="41" text-anchor="end">1.98×</text>
+  <text x="33" y="11" text-anchor="end">Yuku</text>
+  <rect x="43" y="0" width="244" height="22" rx="4" fill="#E8890C"/>
+  <text x="295" y="11">12.42 ms</text>
+  <text x="33" y="41" text-anchor="end">Oxc</text>
+  <rect x="43" y="30" width="517" height="22" rx="4" fill="#B5179E"/>
+  <text x="568" y="41">26.30 ms</text>
+  <text class="ratio" x="552" y="41" text-anchor="end">2.12×</text>
 </svg>

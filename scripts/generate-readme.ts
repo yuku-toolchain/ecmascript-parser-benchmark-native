@@ -30,16 +30,16 @@ const PARSERS = {
     semantic: false,
   },
   yuku_semantic: {
-    name: "Yuku + Semantic",
+    name: "Yuku",
     language: "Zig",
-    description: "Yuku parser with semantic analysis.",
+    description: "Yuku semantic analysis.",
     url: "https://github.com/yuku-toolchain/yuku",
     semantic: true,
   },
   oxc_semantic: {
-    name: "Oxc + Semantic",
+    name: "Oxc",
     language: "Rust",
-    description: "Oxc parser with semantic analysis.",
+    description: "Oxc semantic analysis.",
     url: "https://github.com/oxc-project/oxc",
     semantic: true,
   },
@@ -230,15 +230,7 @@ async function generateSemanticSection(): Promise<string> {
   lines.push(`## Semantic`);
   lines.push("");
   lines.push(
-    `The ECMAScript specification defines a set of early errors that conformant implementations must report before execution. Some of these are detectable during parsing from local context alone, like \`return\` outside a function, \`yield\` outside a generator, invalid destructuring, etc. Others require knowledge of the program's scope structure and bindings, such as redeclarations, unresolved exports, private fields used outside their class, etc.`,
-  );
-  lines.push("");
-  lines.push(
-    `Parsers handle this differently: SWC checks some scope-dependent errors during parsing itself, while Yuku and Oxc defer them entirely to a separate semantic analysis pass. This keeps parsing fast and lets each consumer opt in only to the work it actually needs. A formatter, for example, only needs the AST and should not pay the cost of scope resolution.`,
-  );
-  lines.push("");
-  lines.push(
-    `The benchmarks below measure parsing followed by this additional pass, which builds a scope tree and symbol table, resolves identifier references to their declarations, and reports the remaining early errors. Together, parsing and semantic analysis cover the full set of early errors required by the specification.`,
+    `Time to build the semantic model from an already-parsed AST. Parse time is excluded.`,
   );
   lines.push("");
 
@@ -255,7 +247,7 @@ async function generateSemanticSection(): Promise<string> {
     const chartPath = await generateChart(entries, `${fileKey}_semantic`);
     if (chartPath) {
       lines.push(
-        `![Bar chart comparing parser speeds with semantic analysis for ${fileName}](${chartPath})`,
+        `![Bar chart comparing semantic analysis speeds for ${fileName}](${chartPath})`,
       );
       lines.push("");
     }
@@ -354,7 +346,7 @@ function generateMethodologySection(): string {
 
 Parsing is timed in-process to isolate it from process startup, dynamic linking, file I/O, and memory teardown, which would otherwise dominate the measurement on smaller files.
 
-The source is read once, then each parser runs 50 warmup iterations followed by 300 timed iterations. A monotonic clock wraps only the parse call (plus the semantic pass for the semantic variants); allocation and teardown happen outside the timed region, and the result passes through an optimization barrier so the work cannot be elided. Reported figures are the median, minimum, and 99th percentile of the timed runs.
+The source is read once, then each parser runs 50 warmup iterations followed by 300 timed iterations. A monotonic clock wraps only the parse call, or the semantic pass for the semantic benchmarks; allocation and teardown happen outside the timed region, and the result passes through an optimization barrier so the work cannot be elided. Reported figures are the median, minimum, and 99th percentile of the timed runs.
 
 Binaries are built with release optimizations: Rust with \`cargo build --release\` (LTO, single codegen unit, symbol stripping) and Zig with \`zig build --release=fast\`. Each uses a fast general-purpose allocator (Rust \`mimalloc\`, Zig \`smp_allocator\`).`;
 }
